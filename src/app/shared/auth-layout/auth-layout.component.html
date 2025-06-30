@@ -2,12 +2,18 @@
   <div class="background-image"></div>
   <div class="overlay"></div>
   <div class="content">
+    <div class="logo-stack">
+      <img src="/brand-logo.png" alt="Brand Logo" class="brand-logo" />
+      <div class="brgykonek-text">
+        <span class="brgy">BRGY</span><span class="konek">KONEK</span>
+      </div>
+    </div>
     <div class="auth-container">
       <div class="auth-header" *ngIf="title || subtitle">
         <h1 class="auth-title" *ngIf="title">{{ title }}</h1>
         <p class="auth-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
       </div>
-      <div class="auth-body">
+      <div class="auth-body" style="zoom: 0.865">
         <ng-content></ng-content>
       </div>
     </div>
