@@ -1,0 +1,335 @@
+<div
+  class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white shadow-xl rounded-lg overflow-hidden">
+      <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-8">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-white">My Profile</h1>
+            <p class="text-indigo-100 mt-1">Manage your account information</p>
+          </div>
+          <button
+            (click)="logout()"
+            class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-all duration-200"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <div
+          *ngIf="successMessage"
+          class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative"
+        >
+          {{ successMessage }}
+        </div>
+
+        <div
+          *ngIf="errorMessage"
+          class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
+        >
+          {{ errorMessage }}
+        </div>
+
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-semibold text-gray-900">
+            Personal Information
+          </h2>
+          <button
+            (click)="toggleEdit()"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+          >
+            {{ isEditing ? "Cancel" : "Edit Profile" }}
+          </button>
+        </div>
+
+        <form
+          [formGroup]="profileForm"
+          (ngSubmit)="onSubmit()"
+          class="space-y-6"
+        >
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >First Name</label
+              >
+              <div *ngIf="!isEditing" class="mt-1 p-3 bg-gray-50 rounded-md">
+                {{ user?.firstName }}
+              </div>
+              <input
+                *ngIf="isEditing"
+                type="text"
+                formControlName="firstName"
+                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                [class.border-red-500]="
+                  profileForm.get('firstName')?.invalid &&
+                  profileForm.get('firstName')?.touched
+                "
+              />
+              <div
+                *ngIf="
+                  isEditing &&
+                  profileForm.get('firstName')?.invalid &&
+                  profileForm.get('firstName')?.touched
+                "
+                class="text-red-500 text-xs mt-1"
+              >
+                First name is required and must be at least 2 characters
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >Last Name</label
+              >
+              <div *ngIf="!isEditing" class="mt-1 p-3 bg-gray-50 rounded-md">
+                {{ user?.lastName }}
+              </div>
+              <input
+                *ngIf="isEditing"
+                type="text"
+                formControlName="lastName"
+                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                [class.border-red-500]="
+                  profileForm.get('lastName')?.invalid &&
+                  profileForm.get('lastName')?.touched
+                "
+              />
+              <div
+                *ngIf="
+                  isEditing &&
+                  profileForm.get('lastName')?.invalid &&
+                  profileForm.get('lastName')?.touched
+                "
+                class="text-red-500 text-xs mt-1"
+              >
+                Last name is required and must be at least 2 characters
+              </div>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >Email Address</label
+              >
+              <div *ngIf="!isEditing" class="mt-1 p-3 bg-gray-50 rounded-md">
+                {{ user?.email }}
+              </div>
+              <input
+                *ngIf="isEditing"
+                type="email"
+                formControlName="email"
+                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                [class.border-red-500]="
+                  profileForm.get('email')?.invalid &&
+                  profileForm.get('email')?.touched
+                "
+              />
+              <div
+                *ngIf="
+                  isEditing &&
+                  profileForm.get('email')?.invalid &&
+                  profileForm.get('email')?.touched
+                "
+                class="text-red-500 text-xs mt-1"
+              >
+                Please enter a valid email address
+              </div>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >Phone Number</label
+              >
+              <div *ngIf="!isEditing" class="mt-1 p-3 bg-gray-50 rounded-md">
+                {{ user?.phone || "Not provided" }}
+              </div>
+              <input
+                *ngIf="isEditing"
+                type="tel"
+                formControlName="phone"
+                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                [class.border-red-500]="
+                  profileForm.get('phone')?.invalid &&
+                  profileForm.get('phone')?.touched
+                "
+                placeholder="+63 912 345 6789"
+              />
+              <div
+                *ngIf="
+                  isEditing &&
+                  profileForm.get('phone')?.invalid &&
+                  profileForm.get('phone')?.touched
+                "
+                class="text-red-500 text-xs mt-1"
+              >
+                Please enter a valid phone number
+              </div>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >Complete Address</label
+              >
+              <div *ngIf="!isEditing" class="mt-1 p-3 bg-gray-50 rounded-md">
+                {{ user?.address || "Not provided" }}
+              </div>
+              <input
+                *ngIf="isEditing"
+                type="text"
+                formControlName="address"
+                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                [class.border-red-500]="
+                  profileForm.get('address')?.invalid &&
+                  profileForm.get('address')?.touched
+                "
+                placeholder="123 Main Street, Unit 4A"
+              />
+              <div
+                *ngIf="
+                  isEditing &&
+                  profileForm.get('address')?.invalid &&
+                  profileForm.get('address')?.touched
+                "
+                class="text-red-500 text-xs mt-1"
+              >
+                Complete address is required
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >Barangay</label
+              >
+              <div *ngIf="!isEditing" class="mt-1 p-3 bg-gray-50 rounded-md">
+                {{ user?.barangay || "Not provided" }}
+              </div>
+              <input
+                *ngIf="isEditing"
+                type="text"
+                formControlName="barangay"
+                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                [class.border-red-500]="
+                  profileForm.get('barangay')?.invalid &&
+                  profileForm.get('barangay')?.touched
+                "
+              />
+              <div
+                *ngIf="
+                  isEditing &&
+                  profileForm.get('barangay')?.invalid &&
+                  profileForm.get('barangay')?.touched
+                "
+                class="text-red-500 text-xs mt-1"
+              >
+                Barangay is required
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >City</label
+              >
+              <div *ngIf="!isEditing" class="mt-1 p-3 bg-gray-50 rounded-md">
+                {{ user?.city || "Not provided" }}
+              </div>
+              <input
+                *ngIf="isEditing"
+                type="text"
+                formControlName="city"
+                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                [class.border-red-500]="
+                  profileForm.get('city')?.invalid &&
+                  profileForm.get('city')?.touched
+                "
+              />
+              <div
+                *ngIf="
+                  isEditing &&
+                  profileForm.get('city')?.invalid &&
+                  profileForm.get('city')?.touched
+                "
+                class="text-red-500 text-xs mt-1"
+              >
+                City is required
+              </div>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >Province</label
+              >
+              <div *ngIf="!isEditing" class="mt-1 p-3 bg-gray-50 rounded-md">
+                {{ user?.province || "Not provided" }}
+              </div>
+              <input
+                *ngIf="isEditing"
+                type="text"
+                formControlName="province"
+                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                [class.border-red-500]="
+                  profileForm.get('province')?.invalid &&
+                  profileForm.get('province')?.touched
+                "
+              />
+              <div
+                *ngIf="
+                  isEditing &&
+                  profileForm.get('province')?.invalid &&
+                  profileForm.get('province')?.touched
+                "
+                class="text-red-500 text-xs mt-1"
+              >
+                Province is required
+              </div>
+            </div>
+          </div>
+
+          <div
+            *ngIf="isEditing"
+            class="flex justify-end space-x-4 pt-6 border-t border-gray-200"
+          >
+            <button
+              type="button"
+              (click)="toggleEdit()"
+              class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-lg transition-colors duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="profileForm.invalid || isLoading"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span *ngIf="isLoading" class="inline-flex items-center">
+                <svg
+                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Saving...
+              </span>
+              <span *ngIf="!isLoading">Save Changes</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
