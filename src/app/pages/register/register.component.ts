@@ -21,6 +21,8 @@ export class RegisterComponent {
   registerForm: FormGroup;
   isLoading = false;
   errorMessage = '';
+  isDragOver = false;
+  selectedFileName = '';
 
   constructor(
     private fb: FormBuilder,
@@ -29,19 +31,17 @@ export class RegisterComponent {
   ) {
     this.registerForm = this.fb.group(
       {
-        firstName: ['', [Validators.required, Validators.minLength(2)]],
-        lastName: ['', [Validators.required, Validators.minLength(2)]],
+        first_name: ['', [Validators.required, Validators.minLength(2)]],
+        middle_name: [''],
+        last_name: ['', [Validators.required, Validators.minLength(2)]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', [Validators.required]],
-        phone: [
+        mobile_number: [
           '',
           [Validators.required, Validators.pattern(/^\+?[0-9\s\-\(\)]+$/)],
         ],
-        address: ['', [Validators.required]],
-        barangay: ['', [Validators.required]],
-        city: ['', [Validators.required]],
-        province: ['', [Validators.required]],
+        barangay_clearance: ['', [Validators.required, this.fileValidator]],
       },
       { validators: this.passwordMatchValidator }
     );
@@ -70,24 +70,52 @@ export class RegisterComponent {
     return null;
   }
 
+  fileValidator(control: any) {
+    if (!control.value) {
+      return null;
+    }
+
+    const file = control.value;
+    const maxSize = 5 * 1024 * 1024;
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'application/pdf',
+    ];
+
+    if (file.size > maxSize) {
+      return { fileSize: true };
+    }
+
+    if (!allowedTypes.includes(file.type)) {
+      return { fileType: true };
+    }
+
+    return null;
+  }
+
   onSubmit(): void {
     if (this.registerForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
 
       const formValue = this.registerForm.value;
-      const userData = {
-        firstName: formValue.firstName,
-        lastName: formValue.lastName,
-        email: formValue.email,
-        phone: formValue.phone,
-        address: formValue.address,
-        barangay: formValue.barangay,
-        city: formValue.city,
-        province: formValue.province,
-      };
+      const formData = new FormData();
 
-      this.authService.register(userData).subscribe({
+      formData.append('first_name', formValue.first_name);
+      formData.append('middle_name', formValue.middle_name);
+      formData.append('last_name', formValue.last_name);
+      formData.append('email', formValue.email);
+      formData.append('password', formValue.password);
+      formData.append('mobile_number', formValue.mobile_number);
+
+      if (formValue.barangay_clearance) {
+        formData.append('barangay_clearance', formValue.barangay_clearance);
+      }
+
+      this.authService.register(formData).subscribe({
         next: (response) => {
           this.isLoading = false;
           if (response.success) {
@@ -106,5 +134,44 @@ export class RegisterComponent {
 
   goToLogin(): void {
     this.router.navigate(['/login']);
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      this.handleFileSelection(file);
+    }
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.handleFileSelection(file);
+    }
+  }
+
+  private handleFileSelection(file: File): void {
+    this.selectedFileName = file.name;
+    this.registerForm.patchValue({
+      barangay_clearance: file,
+    });
+    this.registerForm.get('barangay_clearance')?.markAsTouched();
   }
 }

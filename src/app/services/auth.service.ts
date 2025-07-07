@@ -32,53 +32,115 @@ export class AuthService {
     password: string
   ): Observable<{ success: boolean; message: string; user?: User }> {
     return new Observable((observer) => {
-      setTimeout(() => {
-        if (email === 'admin@example.com' && password === 'password') {
-          const user: User = {
-            id: '1',
-            email: email,
-            firstName: 'John',
-            lastName: 'Doe',
-            phone: '+639123456789',
-            address: '123 Main Street',
-            barangay: 'Barangay 1',
-            city: 'Manila',
-            province: 'Metro Manila',
-          };
+      fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            const user: User = {
+              id: data.user.id,
+              email: data.user.email,
+              firstName: data.user.first_name,
+              lastName: data.user.last_name,
+              phone: data.user.mobile_number,
+              address: data.user.address,
+              barangay: data.user.barangay,
+              city: data.user.city,
+              province: data.user.province,
+            };
 
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          this.currentUserSubject.next(user);
-          observer.next({ success: true, message: 'Login successful', user });
-        } else {
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            this.currentUserSubject.next(user);
+            observer.next({
+              success: true,
+              message: data.message || 'Login successful',
+              user,
+            });
+          } else {
+            observer.next({
+              success: false,
+              message: data.message || 'Invalid email or password',
+            });
+          }
+          observer.complete();
+        })
+        .catch((error) => {
           observer.next({
             success: false,
-            message: 'Invalid email or password',
+            message: 'Network error occurred',
           });
-        }
-        observer.complete();
-      }, 1000);
+          observer.complete();
+        });
     });
   }
 
   register(
-    userData: Omit<User, 'id'>
+    userData:
+      | FormData
+      | {
+          first_name: string;
+          middle_name?: string;
+          last_name: string;
+          email: string;
+          password: string;
+          mobile_number: string;
+        }
   ): Observable<{ success: boolean; message: string; user?: User }> {
     return new Observable((observer) => {
-      setTimeout(() => {
-        const user: User = {
-          id: Date.now().toString(),
-          ...userData,
-        };
+      const isFormData = userData instanceof FormData;
+      const headers: Record<string, string> = {};
 
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        this.currentUserSubject.next(user);
-        observer.next({
-          success: true,
-          message: 'Registration successful',
-          user,
+      if (!isFormData) {
+        headers['Content-Type'] = 'application/json';
+      }
+
+      fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers,
+        body: isFormData ? userData : JSON.stringify(userData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            const user: User = {
+              id: data.user.id,
+              email: data.user.email,
+              firstName: data.user.first_name,
+              lastName: data.user.last_name,
+              phone: data.user.mobile_number,
+              address: data.user.address,
+              barangay: data.user.barangay,
+              city: data.user.city,
+              province: data.user.province,
+            };
+
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            this.currentUserSubject.next(user);
+            observer.next({
+              success: true,
+              message: data.message || 'Registration successful',
+              user,
+            });
+          } else {
+            observer.next({
+              success: false,
+              message: data.message || 'Registration failed',
+            });
+          }
+          observer.complete();
+        })
+        .catch((error) => {
+          observer.next({
+            success: false,
+            message: 'Network error occurred',
+          });
+          observer.complete();
         });
-        observer.complete();
-      }, 1000);
     });
   }
 
