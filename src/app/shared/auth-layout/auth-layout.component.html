@@ -2,19 +2,32 @@
   <div class="background-image"></div>
   <div class="overlay"></div>
   <div class="content">
-    <div class="logo-stack">
-      <img src="/brand-logo.png" alt="Brand Logo" class="brand-logo" />
-      <div class="brgykonek-text">
-        <span class="brgy">BRGY</span><span class="konek">KONEK</span>
+    <div class="auth-card">
+      <div class="left-column">
+        <div class="logo-stack">
+          <img src="/brand-logo.png" alt="Brand Logo" class="brand-logo" />
+          <div class="brgykonek-text">
+            <span class="brgy">BRGY</span><span class="konek">KONEK</span>
+          </div>
+        </div>
+        <div class="app-description">
+          <h2 class="app-tagline">Connect with your community</h2>
+          <p class="app-description-text">
+            Join BrgyKonek to stay connected with your barangay, access
+            services, and engage with your neighbors.
+          </p>
+        </div>
       </div>
-    </div>
-    <div class="auth-container">
-      <div class="auth-header" *ngIf="title || subtitle">
-        <h1 class="auth-title" *ngIf="title">{{ title }}</h1>
-        <p class="auth-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
-      </div>
-      <div class="auth-body" style="zoom: 0.865">
-        <ng-content></ng-content>
+      <div class="right-column">
+        <div class="auth-container">
+          <div class="auth-header" *ngIf="title || subtitle">
+            <h1 class="auth-title" *ngIf="title">{{ title }}</h1>
+            <p class="auth-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+          </div>
+          <div class="auth-body">
+            <ng-content></ng-content>
+          </div>
+        </div>
       </div>
     </div>
   </div>

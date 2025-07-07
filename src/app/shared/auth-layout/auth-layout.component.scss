@@ -35,10 +35,34 @@
   width: 100vw;
   height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 1rem;
+}
+
+.auth-card {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  min-height: 600px;
+  max-height: 90vh;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.left-column {
+  flex: 1;
+  background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  color: white;
+  text-align: center;
 }
 
 .logo-stack {
@@ -46,7 +70,6 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 2rem;
-  z-index: 4;
 }
 
 .brand-logo {
@@ -54,34 +77,59 @@
   width: 100%;
   height: auto;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .brgykonek-text {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  letter-spacing: 1px;
-  margin-bottom: 1.5rem;
+  letter-spacing: 2px;
+  margin-bottom: 2rem;
   display: flex;
   justify-content: center;
 }
 
 .brgy {
-  color: #1d4ed8;
+  color: #ffffff;
 }
 
 .konek {
-  color: #ef4444;
+  color: #fbbf24;
+}
+
+.app-description {
+  max-width: 300px;
+}
+
+.app-tagline {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: #ffffff;
+}
+
+.app-description-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #e5e7eb;
+  margin: 0;
+}
+
+.right-column {
+  flex: 1.2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem;
+  overflow-y: auto;
 }
 
 .auth-container {
   width: 100%;
-  max-width: 400px;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  max-width: 500px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .auth-header {
@@ -104,16 +152,73 @@
 
 .auth-body {
   width: 100%;
+  flex: 1;
+  overflow-y: auto;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .auth-card {
+    flex-direction: column;
+    height: auto;
+    max-height: 95vh;
+    overflow-y: auto;
+  }
+
+  .left-column {
+    padding: 2rem 1.5rem;
+  }
+
+  .right-column {
+    padding: 1.5rem;
+    flex: 1;
+    align-items: stretch;
+  }
+
   .auth-container {
     max-width: 100%;
-    margin: 0 1rem;
-    padding: 1.5rem;
+    min-height: auto;
+  }
+
+  .auth-body {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .brgykonek-text {
+    font-size: 2rem;
+  }
+
+  .app-tagline {
+    font-size: 1.25rem;
   }
 
   .auth-title {
     font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 0.5rem;
+  }
+
+  .auth-card {
+    border-radius: 12px;
+  }
+
+  .left-column {
+    padding: 1.5rem 1rem;
+  }
+
+  .right-column {
+    padding: 1rem;
+  }
+
+  .brgykonek-text {
+    font-size: 1.75rem;
+  }
+
+  .brand-logo {
+    max-width: 80px;
   }
 }
