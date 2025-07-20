@@ -5,6 +5,8 @@ import {
   FormGroup,
   Validators,
   ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -34,17 +36,82 @@ export class RegisterComponent {
         first_name: ['', [Validators.required, Validators.minLength(2)]],
         middle_name: [''],
         last_name: ['', [Validators.required, Validators.minLength(2)]],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
+        email: [
+          '',
+          [Validators.required, Validators.email, this.gmailOnlyValidator],
+        ],
+        password: ['', [Validators.required, this.passwordStrengthValidator]],
         confirmPassword: ['', [Validators.required]],
         mobile_number: [
           '',
-          [Validators.required, Validators.pattern(/^\+?[0-9\s\-\(\)]+$/)],
+          [Validators.required, this.philippineMobileValidator],
         ],
         barangay_clearance: ['', [Validators.required, this.fileValidator]],
       },
       { validators: this.passwordMatchValidator }
     );
+  }
+
+  passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null;
+    }
+
+    const password = control.value;
+    const minLength = 8;
+    const maxLength = 20;
+
+    if (password.length < minLength || password.length > maxLength) {
+      return { passwordLength: { min: minLength, max: maxLength } };
+    }
+
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    const errors: any = {};
+
+    if (!hasUpperCase) {
+      errors.passwordUppercase = true;
+    }
+    if (!hasLowerCase) {
+      errors.passwordLowercase = true;
+    }
+    if (!hasNumbers) {
+      errors.passwordNumber = true;
+    }
+    if (!hasSpecialChar) {
+      errors.passwordSpecial = true;
+    }
+
+    return Object.keys(errors).length > 0 ? errors : null;
+  }
+
+  philippineMobileValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null;
+    }
+
+    const mobileRegex = /^(\+63)[0-9]{10}$/;
+    if (!mobileRegex.test(control.value)) {
+      return { philippineMobile: true };
+    }
+
+    return null;
+  }
+
+  gmailOnlyValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null;
+    }
+
+    const email = control.value;
+    if (!email.endsWith('@gmail.com')) {
+      return { gmailOnly: true };
+    }
+
+    return null;
   }
 
   passwordMatchValidator(form: FormGroup) {

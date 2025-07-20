@@ -93,7 +93,12 @@
           "
           class="text-red-500 text-xs mt-1"
         >
-          Please enter a valid email address
+          <div *ngIf="registerForm.get('email')?.errors?.['email']">
+            Please enter a valid email address
+          </div>
+          <div *ngIf="registerForm.get('email')?.errors?.['gmailOnly']">
+            Only Gmail addresses are allowed (example&#64;gmail.com)
+          </div>
         </div>
       </div>
 
@@ -120,7 +125,27 @@
           "
           class="text-red-500 text-xs mt-1"
         >
-          Password must be at least 6 characters
+          <div *ngIf="registerForm.get('password')?.errors?.['passwordLength']">
+            Password must be between 8 and 20 characters
+          </div>
+          <div
+            *ngIf="registerForm.get('password')?.errors?.['passwordUppercase']"
+          >
+            Password must contain at least one uppercase letter
+          </div>
+          <div
+            *ngIf="registerForm.get('password')?.errors?.['passwordLowercase']"
+          >
+            Password must contain at least one lowercase letter
+          </div>
+          <div *ngIf="registerForm.get('password')?.errors?.['passwordNumber']">
+            Password must contain at least one number
+          </div>
+          <div
+            *ngIf="registerForm.get('password')?.errors?.['passwordSpecial']"
+          >
+            Password must contain at least one special character (!&#64;#$%^&*)
+          </div>
         </div>
       </div>
 
@@ -182,7 +207,14 @@
           "
           class="text-red-500 text-xs mt-1"
         >
-          Please enter a valid mobile number
+          <div *ngIf="registerForm.get('mobile_number')?.errors?.['required']">
+            Mobile number is required
+          </div>
+          <div
+            *ngIf="registerForm.get('mobile_number')?.errors?.['philippineMobile']"
+          >
+            Please enter a valid Philippine mobile number (e.g., +639123456789)
+          </div>
         </div>
       </div>
 

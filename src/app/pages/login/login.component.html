@@ -102,4 +102,10 @@
       </button>
     </div>
   </form>
+
+  <app-otp-modal
+    [isVisible]="showOtpModal"
+    (otpVerified)="onOtpVerified($event)"
+    (modalClosed)="onModalClosed()"
+  ></app-otp-modal>
 </app-auth-layout>

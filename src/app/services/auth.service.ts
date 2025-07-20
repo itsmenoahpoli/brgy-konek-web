@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, from } from 'rxjs';
+import { ApiService } from '../utils/api.util';
 
 export interface User {
   id: string;
@@ -13,12 +14,28 @@ export interface User {
   province?: string;
 }
 
+interface ApiUser {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  mobile_number?: string;
+  address?: string;
+  barangay?: string;
+  city?: string;
+  province?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  private loginAttempts = new Map<
+    string,
+    { count: number; lockedUntil?: number }
+  >();
 
   constructor() {
     const storedUser = localStorage.getItem('currentUser');
@@ -31,52 +48,38 @@ export class AuthService {
     email: string,
     password: string
   ): Observable<{ success: boolean; message: string; user?: User }> {
-    return new Observable((observer) => {
-      fetch('http://localhost:3000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
+    return from(
+      ApiService.post<ApiUser>('/auth/login', { email, password }).then(
+        (response) => {
+          if (response.success && response.user) {
             const user: User = {
-              id: data.user.id,
-              email: data.user.email,
-              firstName: data.user.first_name,
-              lastName: data.user.last_name,
-              phone: data.user.mobile_number,
-              address: data.user.address,
-              barangay: data.user.barangay,
-              city: data.user.city,
-              province: data.user.province,
+              id: response.user.id,
+              email: response.user.email,
+              firstName: response.user.first_name,
+              lastName: response.user.last_name,
+              phone: response.user.mobile_number,
+              address: response.user.address,
+              barangay: response.user.barangay,
+              city: response.user.city,
+              province: response.user.province,
             };
 
             localStorage.setItem('currentUser', JSON.stringify(user));
             this.currentUserSubject.next(user);
-            observer.next({
+            return {
               success: true,
-              message: data.message || 'Login successful',
+              message: response.message || 'Login successful',
               user,
-            });
+            };
           } else {
-            observer.next({
+            return {
               success: false,
-              message: data.message || 'Invalid email or password',
-            });
+              message: response.message || 'Invalid email or password',
+            };
           }
-          observer.complete();
-        })
-        .catch((error) => {
-          observer.next({
-            success: false,
-            message: 'Network error occurred',
-          });
-          observer.complete();
-        });
-    });
+        }
+      )
+    );
   }
 
   register(
@@ -91,57 +94,75 @@ export class AuthService {
           mobile_number: string;
         }
   ): Observable<{ success: boolean; message: string; user?: User }> {
-    return new Observable((observer) => {
-      const isFormData = userData instanceof FormData;
-      const headers: Record<string, string> = {};
+    return from(
+      (async () => {
+        const isFormData = userData instanceof FormData;
 
-      if (!isFormData) {
-        headers['Content-Type'] = 'application/json';
-      }
-
-      fetch('http://localhost:3000/api/auth/register', {
-        method: 'POST',
-        headers,
-        body: isFormData ? userData : JSON.stringify(userData),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
+        if (isFormData) {
+          const response = await ApiService.postFormData<ApiUser>(
+            '/auth/register',
+            userData
+          );
+          if (response.success && response.user) {
             const user: User = {
-              id: data.user.id,
-              email: data.user.email,
-              firstName: data.user.first_name,
-              lastName: data.user.last_name,
-              phone: data.user.mobile_number,
-              address: data.user.address,
-              barangay: data.user.barangay,
-              city: data.user.city,
-              province: data.user.province,
+              id: response.user.id,
+              email: response.user.email,
+              firstName: response.user.first_name,
+              lastName: response.user.last_name,
+              phone: response.user.mobile_number,
+              address: response.user.address,
+              barangay: response.user.barangay,
+              city: response.user.city,
+              province: response.user.province,
             };
 
             localStorage.setItem('currentUser', JSON.stringify(user));
             this.currentUserSubject.next(user);
-            observer.next({
+            return {
               success: true,
-              message: data.message || 'Registration successful',
+              message: response.message || 'Registration successful',
               user,
-            });
+            };
           } else {
-            observer.next({
+            return {
               success: false,
-              message: data.message || 'Registration failed',
-            });
+              message: response.message || 'Registration failed',
+            };
           }
-          observer.complete();
-        })
-        .catch((error) => {
-          observer.next({
-            success: false,
-            message: 'Network error occurred',
-          });
-          observer.complete();
-        });
-    });
+        } else {
+          const response = await ApiService.post<ApiUser>(
+            '/auth/register',
+            userData
+          );
+          if (response.success && response.user) {
+            const user: User = {
+              id: response.user.id,
+              email: response.user.email,
+              firstName: response.user.first_name,
+              lastName: response.user.last_name,
+              phone: response.user.mobile_number,
+              address: response.user.address,
+              barangay: response.user.barangay,
+              city: response.user.city,
+              province: response.user.province,
+            };
+
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            this.currentUserSubject.next(user);
+            return {
+              success: true,
+              message: response.message || 'Registration successful',
+              user,
+            };
+          } else {
+            return {
+              success: false,
+              message: response.message || 'Registration failed',
+            };
+          }
+        }
+      })()
+    );
   }
 
   updateProfile(
@@ -178,5 +199,65 @@ export class AuthService {
 
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
+  }
+
+  getLoginAttempts(email: string): { count: number; lockedUntil?: number } {
+    return this.loginAttempts.get(email) || { count: 0 };
+  }
+
+  incrementLoginAttempts(email: string): void {
+    const attempts = this.loginAttempts.get(email) || { count: 0 };
+    attempts.count += 1;
+
+    if (attempts.count >= 3) {
+      attempts.lockedUntil = Date.now() + 5 * 60 * 1000;
+    }
+
+    this.loginAttempts.set(email, attempts);
+  }
+
+  resetLoginAttempts(email: string): void {
+    this.loginAttempts.delete(email);
+  }
+
+  isAccountLocked(email: string): boolean {
+    const attempts = this.loginAttempts.get(email);
+    if (!attempts) return false;
+
+    if (attempts.lockedUntil && Date.now() < attempts.lockedUntil) {
+      return true;
+    }
+
+    if (attempts.count >= 3 && !attempts.lockedUntil) {
+      return true;
+    }
+
+    return false;
+  }
+
+  sendOTP(email: string): Observable<{ success: boolean; message: string }> {
+    return from(
+      ApiService.post('/auth/send-otp', { email }).then((response) => ({
+        success: response.success,
+        message: response.message || 'OTP sent successfully',
+      }))
+    );
+  }
+
+  verifyOTP(
+    email: string,
+    otp: string
+  ): Observable<{ success: boolean; message: string }> {
+    return from(
+      ApiService.post('/auth/verify-otp', { email, otp }).then((response) => {
+        if (response.success) {
+          this.resetLoginAttempts(email);
+        }
+        return {
+          success: response.success,
+          message: response.message || 'OTP verification failed',
+        };
+      })
+    );
   }
 }
