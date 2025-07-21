@@ -52,10 +52,11 @@
       <button
         type="button"
         (click)="resendOTP()"
-        [disabled]="isLoading"
+        [disabled]="isLoading || !canResendOTP"
         class="text-sm text-indigo-600 hover:text-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Didn't receive the code? Resend
+        <span *ngIf="canResendOTP">Didn't receive the code? Resend</span>
+        <span *ngIf="!canResendOTP">Resend in {{ countdownTimer }}s</span>
       </button>
     </div>
 
@@ -108,6 +109,22 @@
   [isVisible]="showSuccessModal"
   title="OTP Verified Successfully!"
   message="Your account has been verified. Redirecting to your profile..."
-  [autoCloseDelay]="2000"
+  [autoCloseDelay]="3000"
   (modalClosed)="onSuccessModalClosed()"
 ></app-success-modal>
+
+<app-error-modal
+  [isVisible]="showErrorModal"
+  [title]="errorModalTitle"
+  [message]="errorModalMessage"
+  buttonText="OK"
+  (modalClosed)="onErrorModalClosed()"
+></app-error-modal>
+
+<app-info-modal
+  [isVisible]="showInfoModal"
+  title="OTP Sent Successfully!"
+  message="A new OTP code has been sent to your email. Please check your inbox."
+  buttonText="OK"
+  (modalClosed)="onInfoModalClosed()"
+></app-info-modal>

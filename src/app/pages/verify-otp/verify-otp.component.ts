@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -10,6 +10,8 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.component';
 import { SuccessModalComponent } from '../../shared/success-modal/success-modal.component';
+import { ErrorModalComponent } from '../../shared/error-modal/error-modal.component';
+import { InfoModalComponent } from '../../shared/info-modal/info-modal.component';
 
 @Component({
   selector: 'app-verify-otp',
@@ -20,16 +22,25 @@ import { SuccessModalComponent } from '../../shared/success-modal/success-modal.
     RouterModule,
     AuthLayoutComponent,
     SuccessModalComponent,
+    ErrorModalComponent,
+    InfoModalComponent,
   ],
   templateUrl: './verify-otp.component.html',
   styleUrls: ['./verify-otp.component.scss'],
 })
-export class VerifyOtpComponent implements OnInit {
+export class VerifyOtpComponent implements OnInit, OnDestroy {
   otpForm: FormGroup;
   isLoading = false;
   errorMessage = '';
   showSuccessModal = false;
+  showErrorModal = false;
+  showInfoModal = false;
+  errorModalTitle = '';
+  errorModalMessage = '';
   email = '';
+  countdownTimer = 0;
+  canResendOTP = true;
+  private countdownInterval: any;
 
   constructor(
     private fb: FormBuilder,
@@ -54,6 +65,12 @@ export class VerifyOtpComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
+  }
+
   onSubmit(): void {
     console.log('Form submitted, valid:', this.otpForm.valid);
     console.log('Form value:', this.otpForm.value);
@@ -72,6 +89,9 @@ export class VerifyOtpComponent implements OnInit {
             console.log('OTP verification response:', response);
             if (response.success) {
               this.showSuccessModal = true;
+              setTimeout(() => {
+                this.router.navigate(['/profile']);
+              }, 3000);
             } else {
               this.errorMessage =
                 response.message || 'Invalid OTP. Please try again.';
@@ -85,8 +105,22 @@ export class VerifyOtpComponent implements OnInit {
                 'API not available, simulating successful OTP verification for testing'
               );
               this.showSuccessModal = true;
+              setTimeout(() => {
+                this.router.navigate(['/profile']);
+              }, 3000);
+            } else if (
+              error.error &&
+              error.error.includes('OTP already used')
+            ) {
+              this.errorModalTitle = 'Invalid OTP';
+              this.errorModalMessage =
+                'The OTP code you entered is either invalid or has already been used. Please request a new OTP code.';
+              this.showErrorModal = true;
             } else {
-              this.errorMessage = 'Failed to verify OTP. Please try again.';
+              this.errorModalTitle = 'Verification Failed';
+              this.errorModalMessage =
+                'Failed to verify OTP. Please try again.';
+              this.showErrorModal = true;
             }
           },
         });
@@ -95,7 +129,7 @@ export class VerifyOtpComponent implements OnInit {
   }
 
   resendOTP(): void {
-    if (this.email) {
+    if (this.email && this.canResendOTP) {
       this.isLoading = true;
       this.errorMessage = '';
 
@@ -104,7 +138,8 @@ export class VerifyOtpComponent implements OnInit {
           this.isLoading = false;
           console.log('Resend OTP response:', response);
           if (response.success) {
-            this.errorMessage = '';
+            this.showInfoModal = true;
+            this.startCountdownTimer();
           } else {
             this.errorMessage = 'Failed to send OTP. Please try again.';
           }
@@ -116,9 +151,12 @@ export class VerifyOtpComponent implements OnInit {
             console.log(
               'API not available, simulating successful OTP resend for testing'
             );
-            this.errorMessage = '';
+            this.showInfoModal = true;
+            this.startCountdownTimer();
           } else {
-            this.errorMessage = 'Failed to send OTP. Please try again.';
+            this.errorModalTitle = 'Resend Failed';
+            this.errorModalMessage = 'Failed to send OTP. Please try again.';
+            this.showErrorModal = true;
           }
         },
       });
@@ -132,5 +170,28 @@ export class VerifyOtpComponent implements OnInit {
   onSuccessModalClosed(): void {
     this.showSuccessModal = false;
     this.router.navigate(['/profile']);
+  }
+
+  onErrorModalClosed(): void {
+    this.showErrorModal = false;
+  }
+
+  onInfoModalClosed(): void {
+    this.showInfoModal = false;
+  }
+
+  private startCountdownTimer(): void {
+    this.canResendOTP = false;
+    this.countdownTimer = 60;
+
+    this.countdownInterval = setInterval(() => {
+      this.countdownTimer--;
+
+      if (this.countdownTimer <= 0) {
+        clearInterval(this.countdownInterval);
+        this.canResendOTP = true;
+        this.countdownTimer = 0;
+      }
+    }, 1000);
   }
 }

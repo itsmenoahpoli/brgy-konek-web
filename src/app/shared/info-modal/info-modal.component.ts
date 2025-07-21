@@ -1,0 +1,81 @@
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-info-modal',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div
+      *ngIf="isVisible"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+      (click)="onBackdropClick($event)"
+    >
+      <div
+        class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+      >
+        <div class="mt-3 text-center">
+          <div
+            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100"
+          >
+            <svg
+              class="h-6 w-6 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">
+            {{ title }}
+          </h3>
+          <div class="mt-2 px-7 py-3">
+            <p class="text-sm text-gray-500">
+              {{ message }}
+            </p>
+          </div>
+          <div class="items-center px-4 py-3">
+            <button
+              (click)="closeModal()"
+              class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              {{ buttonText }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+  styles: [],
+})
+export class InfoModalComponent {
+  @Input() set isVisible(value: boolean) {
+    this._isVisible = value;
+  }
+  get isVisible(): boolean {
+    return this._isVisible;
+  }
+  private _isVisible = false;
+  @Input() title = 'Information';
+  @Input() message = 'Information message.';
+  @Input() buttonText = 'OK';
+  @Output() modalClosed = new EventEmitter<void>();
+
+  onBackdropClick(event: Event): void {
+    if (event.target === event.currentTarget) {
+      this.closeModal();
+    }
+  }
+
+  closeModal(): void {
+    this._isVisible = false;
+    this.modalClosed.emit();
+  }
+}
