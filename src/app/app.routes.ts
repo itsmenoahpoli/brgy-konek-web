@@ -35,4 +35,11 @@ export const routes: Routes = [
         (m) => m.ProfileComponent
       ),
   },
+  {
+    path: 'verify-otp',
+    loadComponent: () =>
+      import('./pages/verify-otp/verify-otp.component').then(
+        (m) => m.VerifyOtpComponent
+      ),
+  },
 ];

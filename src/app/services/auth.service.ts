@@ -51,7 +51,7 @@ export class AuthService {
     return from(
       ApiService.post<ApiUser>('/auth/login', { email, password }).then(
         (response) => {
-          if (response.success && response.user) {
+          if (response.user) {
             const user: User = {
               id: response.user.id,
               email: response.user.email,
@@ -251,7 +251,7 @@ export class AuthService {
 
   sendOTP(email: string): Observable<{ success: boolean; message: string }> {
     return from(
-      ApiService.post('/auth/send-otp', { email }).then((response) => ({
+      ApiService.post('/auth/request-otp', { email }).then((response) => ({
         success: response.success,
         message: response.message || 'OTP sent successfully',
       }))
@@ -263,15 +263,17 @@ export class AuthService {
     otp: string
   ): Observable<{ success: boolean; message: string }> {
     return from(
-      ApiService.post('/auth/verify-otp', { email, otp }).then((response) => {
-        if (response.success) {
-          this.resetLoginAttempts(email);
+      ApiService.post('/auth/verify-otp', { email, otp_code: otp }).then(
+        (response) => {
+          if (response.success) {
+            this.resetLoginAttempts(email);
+          }
+          return {
+            success: response.success,
+            message: response.message || 'OTP verification failed',
+          };
         }
-        return {
-          success: response.success,
-          message: response.message || 'OTP verification failed',
-        };
-      })
+      )
     );
   }
 }

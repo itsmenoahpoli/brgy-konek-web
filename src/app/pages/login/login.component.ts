@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -9,7 +9,7 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.component';
-import { OtpModalComponent } from '../../shared/otp-modal/otp-modal.component';
+import { SuccessModalComponent } from '../../shared/success-modal/success-modal.component';
 
 @Component({
   selector: 'app-login',
@@ -19,18 +19,18 @@ import { OtpModalComponent } from '../../shared/otp-modal/otp-modal.component';
     ReactiveFormsModule,
     RouterModule,
     AuthLayoutComponent,
-    OtpModalComponent,
+    SuccessModalComponent,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-  @ViewChild(OtpModalComponent) otpModal?: OtpModalComponent;
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';
-  showOtpModal = false;
-  otpEmail = '';
+  showSuccessModal = false;
+  showOtpLoadingModal = false;
+  showOtpSuccessModal = false;
 
   constructor(
     private fb: FormBuilder,
@@ -48,8 +48,7 @@ export class LoginComponent {
       const { email, password } = this.loginForm.value;
 
       if (this.authService.isAccountLocked(email)) {
-        this.otpEmail = email;
-        this.showOtpModal = true;
+        this.requestOTPAndRedirect(email);
         return;
       }
 
@@ -61,24 +60,13 @@ export class LoginComponent {
           this.isLoading = false;
           if (response.success) {
             this.authService.resetLoginAttempts(email);
-            this.router.navigate(['/profile']);
+            this.requestOTPAndRedirect(email);
           } else {
             this.authService.incrementLoginAttempts(email);
             const attempts = this.authService.getLoginAttempts(email);
 
             if (attempts.count >= 3) {
-              this.otpEmail = email;
-              this.showOtpModal = true;
-              this.authService.sendOTP(email).subscribe({
-                next: (otpResponse) => {
-                  if (!otpResponse.success) {
-                    this.errorMessage = 'Failed to send OTP. Please try again.';
-                  }
-                },
-                error: () => {
-                  this.errorMessage = 'Failed to send OTP. Please try again.';
-                },
-              });
+              this.requestOTPAndRedirect(email);
             } else {
               this.errorMessage = response.message;
             }
@@ -90,18 +78,7 @@ export class LoginComponent {
           const attempts = this.authService.getLoginAttempts(email);
 
           if (attempts.count >= 3) {
-            this.otpEmail = email;
-            this.showOtpModal = true;
-            this.authService.sendOTP(email).subscribe({
-              next: (otpResponse) => {
-                if (!otpResponse.success) {
-                  this.errorMessage = 'Failed to send OTP. Please try again.';
-                }
-              },
-              error: () => {
-                this.errorMessage = 'Failed to send OTP. Please try again.';
-              },
-            });
+            this.requestOTPAndRedirect(email);
           } else {
             this.errorMessage = 'An error occurred during login';
           }
@@ -110,34 +87,54 @@ export class LoginComponent {
     }
   }
 
+  private requestOTPAndRedirect(email: string): void {
+    console.log('Requesting OTP for email:', email);
+    this.showOtpLoadingModal = true;
+    this.authService.sendOTP(email).subscribe({
+      next: (otpResponse) => {
+        console.log('OTP response:', otpResponse);
+        this.showOtpLoadingModal = false;
+        if (otpResponse.success) {
+          console.log('OTP sent successfully, showing success modal');
+          this.showOtpSuccessModal = true;
+          setTimeout(() => {
+            console.log('Auto redirecting to verify-otp after 2 seconds');
+            this.showOtpSuccessModal = false;
+            this.router.navigate(['/verify-otp'], { queryParams: { email } });
+          }, 2000);
+        } else {
+          this.errorMessage = 'Failed to send OTP. Please try again.';
+        }
+      },
+      error: (error) => {
+        console.log('OTP request error:', error);
+        this.showOtpLoadingModal = false;
+        this.errorMessage = 'Failed to send OTP. Please try again.';
+      },
+    });
+  }
+
   goToRegister(): void {
     this.router.navigate(['/register']);
   }
 
-  onOtpVerified(data: { email: string; otp: string }): void {
-    if (data.email && data.otp) {
-      this.authService.verifyOTP(data.email, data.otp).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.showOtpModal = false;
-            this.otpModal?.resetForm();
-            this.errorMessage = '';
-          } else {
-            this.otpModal!.errorMessage = response.message;
-            this.otpModal!.isLoading = false;
-          }
-        },
-        error: () => {
-          this.otpModal!.errorMessage =
-            'Failed to verify OTP. Please try again.';
-          this.otpModal!.isLoading = false;
-        },
-      });
-    }
+  onSuccessModalClosed(): void {
+    this.showSuccessModal = false;
+    this.router.navigate(['/profile']);
   }
 
-  onModalClosed(): void {
-    this.showOtpModal = false;
-    this.otpModal?.resetForm();
+  onOtpSuccessModalClosed(): void {
+    console.log('OTP success modal closed, redirecting to verify-otp');
+    this.showOtpSuccessModal = false;
+    const email = this.loginForm.get('email')?.value;
+    console.log('Redirecting to verify-otp with email:', email);
+    this.router.navigate(['/verify-otp'], { queryParams: { email } });
+  }
+
+  testRedirect(): void {
+    console.log('Test redirect clicked');
+    const email = this.loginForm.get('email')?.value || 'test@example.com';
+    console.log('Testing redirect to verify-otp with email:', email);
+    this.router.navigate(['/verify-otp'], { queryParams: { email } });
   }
 }
