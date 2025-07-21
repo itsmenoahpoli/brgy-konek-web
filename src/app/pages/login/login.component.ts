@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -10,6 +10,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.component';
 import { SuccessModalComponent } from '../../shared/success-modal/success-modal.component';
+import { OtpModalComponent } from '../../shared/otp-modal/otp-modal.component';
 
 @Component({
   selector: 'app-login',
@@ -20,17 +21,21 @@ import { SuccessModalComponent } from '../../shared/success-modal/success-modal.
     RouterModule,
     AuthLayoutComponent,
     SuccessModalComponent,
+    OtpModalComponent,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
+  @ViewChild(OtpModalComponent) otpModal!: OtpModalComponent;
+
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';
   showSuccessModal = false;
   showOtpLoadingModal = false;
   showOtpSuccessModal = false;
+  showOtpModal = false;
 
   constructor(
     private fb: FormBuilder,
@@ -48,7 +53,7 @@ export class LoginComponent {
       const { email, password } = this.loginForm.value;
 
       if (this.authService.isAccountLocked(email)) {
-        this.requestOTPAndRedirect(email);
+        this.showOtpModal = true;
         return;
       }
 
@@ -66,7 +71,7 @@ export class LoginComponent {
             const attempts = this.authService.getLoginAttempts(email);
 
             if (attempts.count >= 3) {
-              this.requestOTPAndRedirect(email);
+              this.showOtpModal = true;
             } else {
               this.errorMessage = response.message;
             }
@@ -78,13 +83,53 @@ export class LoginComponent {
           const attempts = this.authService.getLoginAttempts(email);
 
           if (attempts.count >= 3) {
-            this.requestOTPAndRedirect(email);
+            this.showOtpModal = true;
           } else {
             this.errorMessage = 'An error occurred during login';
           }
         },
       });
     }
+  }
+
+  onOtpRequested(email: string): void {
+    this.authService.sendOTP(email).subscribe({
+      next: (otpResponse) => {
+        if (otpResponse.success) {
+          this.otpModal.setOtpRequested();
+        } else {
+          this.otpModal.setError('Failed to send OTP. Please try again.');
+        }
+      },
+      error: (error) => {
+        this.otpModal.setError('Failed to send OTP. Please try again.');
+      },
+    });
+  }
+
+  onOtpVerified(data: { email: string; otp: string }): void {
+    this.authService.verifyOTP(data.email, data.otp).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.authService.resetLoginAttempts(data.email);
+          this.showOtpModal = false;
+          this.otpModal.resetForm();
+          this.router.navigate(['/profile']);
+        } else {
+          this.otpModal.setError(
+            response.message || 'Invalid OTP. Please try again.'
+          );
+        }
+      },
+      error: (error) => {
+        this.otpModal.setError('Failed to verify OTP. Please try again.');
+      },
+    });
+  }
+
+  onOtpModalClosed(): void {
+    this.showOtpModal = false;
+    this.otpModal.resetForm();
   }
 
   private requestOTPAndRedirect(email: string): void {

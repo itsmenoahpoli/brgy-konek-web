@@ -161,3 +161,10 @@
   [autoCloseDelay]="2000"
   (modalClosed)="onOtpSuccessModalClosed()"
 ></app-success-modal>
+
+<app-otp-modal
+  [isVisible]="showOtpModal"
+  (otpRequested)="onOtpRequested($event)"
+  (otpVerified)="onOtpVerified($event)"
+  (modalClosed)="onOtpModalClosed()"
+></app-otp-modal>
