@@ -103,26 +103,33 @@ export class AuthService {
             '/auth/register',
             userData
           );
-          if (response.success && response.user) {
-            const user: User = {
-              id: response.user.id,
-              email: response.user.email,
-              firstName: response.user.first_name,
-              lastName: response.user.last_name,
-              phone: response.user.mobile_number,
-              address: response.user.address,
-              barangay: response.user.barangay,
-              city: response.user.city,
-              province: response.user.province,
-            };
+          if (response.success || response.status === 201) {
+            if (response.user) {
+              const user: User = {
+                id: response.user.id,
+                email: response.user.email,
+                firstName: response.user.first_name,
+                lastName: response.user.last_name,
+                phone: response.user.mobile_number,
+                address: response.user.address,
+                barangay: response.user.barangay,
+                city: response.user.city,
+                province: response.user.province,
+              };
 
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            this.currentUserSubject.next(user);
-            return {
-              success: true,
-              message: response.message || 'Registration successful',
-              user,
-            };
+              localStorage.setItem('currentUser', JSON.stringify(user));
+              this.currentUserSubject.next(user);
+              return {
+                success: true,
+                message: response.message || 'Registration successful',
+                user,
+              };
+            } else {
+              return {
+                success: true,
+                message: response.message || 'Registration successful',
+              };
+            }
           } else {
             return {
               success: false,
@@ -134,30 +141,37 @@ export class AuthService {
             '/auth/register',
             userData
           );
-          if (response.success && response.user) {
-            const user: User = {
-              id: response.user.id,
-              email: response.user.email,
-              firstName: response.user.first_name,
-              lastName: response.user.last_name,
-              phone: response.user.mobile_number,
-              address: response.user.address,
-              barangay: response.user.barangay,
-              city: response.user.city,
-              province: response.user.province,
-            };
+          if (response.success || response.status === 201) {
+            if (response.user) {
+              const user: User = {
+                id: response.user.id,
+                email: response.user.email,
+                firstName: response.user.first_name,
+                lastName: response.user.last_name,
+                phone: response.user.mobile_number,
+                address: response.user.address,
+                barangay: response.user.barangay,
+                city: response.user.city,
+                province: response.user.province,
+              };
 
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            this.currentUserSubject.next(user);
-            return {
-              success: true,
-              message: response.message || 'Registration successful',
-              user,
-            };
+              localStorage.setItem('currentUser', JSON.stringify(user));
+              this.currentUserSubject.next(user);
+              return {
+                success: true,
+                message: response.message || 'Registration successful',
+                user,
+              };
+            } else {
+              return {
+                success: true,
+                message: response.message || 'Registration successful',
+              };
+            }
           } else {
             return {
               success: false,
-              message: response.message || 'Registration failed',
+              message: 'Registration failed',
             };
           }
         }

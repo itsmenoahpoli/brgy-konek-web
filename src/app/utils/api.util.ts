@@ -14,6 +14,7 @@ export interface ApiResponse<T = any> {
   message: string;
   data?: T;
   user?: T;
+  status?: number;
 }
 
 export class ApiService {
@@ -26,11 +27,15 @@ export class ApiService {
         url,
         config
       );
-      return response.data;
+      return {
+        ...response.data,
+        status: response.status,
+      };
     } catch (error: any) {
       return {
         success: false,
         message: error.response?.data?.message || 'Network error occurred',
+        status: error.response?.status,
       };
     }
   }
@@ -46,11 +51,15 @@ export class ApiService {
         data,
         config
       );
-      return response.data;
+      return {
+        ...response.data,
+        status: response.status,
+      };
     } catch (error: any) {
       return {
         success: false,
         message: error.response?.data?.message || 'Network error occurred',
+        status: error.response?.status,
       };
     }
   }
@@ -66,11 +75,15 @@ export class ApiService {
         data,
         config
       );
-      return response.data;
+      return {
+        ...response.data,
+        status: response.status,
+      };
     } catch (error: any) {
       return {
         success: false,
         message: error.response?.data?.message || 'Network error occurred',
+        status: error.response?.status,
       };
     }
   }
@@ -84,11 +97,15 @@ export class ApiService {
         url,
         config
       );
-      return response.data;
+      return {
+        ...response.data,
+        status: response.status,
+      };
     } catch (error: any) {
       return {
         success: false,
         message: error.response?.data?.message || 'Network error occurred',
+        status: error.response?.status,
       };
     }
   }
@@ -110,11 +127,15 @@ export class ApiService {
           },
         }
       );
-      return response.data;
+      return {
+        ...response.data,
+        status: response.status,
+      };
     } catch (error: any) {
       return {
         success: false,
         message: error.response?.data?.message || 'Network error occurred',
+        status: error.response?.status,
       };
     }
   }
