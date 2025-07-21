@@ -34,20 +34,17 @@ export class RegisterComponent {
   ) {
     this.registerForm = this.fb.group(
       {
-        first_name: ['John', [Validators.required, Validators.minLength(2)]],
+        first_name: ['', [Validators.required, Validators.minLength(2)]],
         middle_name: [''],
-        last_name: ['Doe', [Validators.required, Validators.minLength(2)]],
+        last_name: ['', [Validators.required, Validators.minLength(2)]],
         email: [
-          'john.doe@gmail.com',
+          '',
           [Validators.required, Validators.email, this.gmailOnlyValidator],
         ],
-        password: [
-          'Password123!',
-          [Validators.required, this.passwordStrengthValidator],
-        ],
-        confirmPassword: ['Password123!', [Validators.required]],
+        password: ['', [Validators.required, this.passwordStrengthValidator]],
+        confirmPassword: ['', [Validators.required]],
         mobile_number: [
-          '+639123456789',
+          '',
           [Validators.required, this.philippineMobileValidator],
         ],
         barangay_clearance: ['', [this.fileValidator]],
