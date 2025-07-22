@@ -10,9 +10,8 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.component';
-import { StatusModalComponent } from '../../shared/status-modal/status-modal.component';
-import { NgIcon } from '@ng-icons/core';
+import { AuthLayoutComponent } from '../../components/shared/auth-layout/auth-layout.component';
+import { StatusModalComponent } from '../../components/shared/status-modal/status-modal.component';
 
 @Component({
   selector: 'app-register',

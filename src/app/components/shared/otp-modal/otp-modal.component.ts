@@ -6,7 +6,6 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-otp-modal',

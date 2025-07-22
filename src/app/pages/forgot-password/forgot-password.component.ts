@@ -7,9 +7,9 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.component';
+import { AuthLayoutComponent } from '../../components/shared/auth-layout/auth-layout.component';
 import { AuthService } from '../../services/auth.service';
-import { StatusModalComponent } from '../../shared/status-modal/status-modal.component';
+import { StatusModalComponent } from '../../components/shared/status-modal/status-modal.component';
 
 @Component({
   selector: 'app-forgot-password',

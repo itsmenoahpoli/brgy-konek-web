@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DashboardLayoutComponent } from '../../../shared/dashboard-layout/dashboard-layout.component';
+import { DashboardLayoutComponent } from '../../../components/shared/dashboard-layout/dashboard-layout.component';
 
 @Component({
   selector: 'app-home',

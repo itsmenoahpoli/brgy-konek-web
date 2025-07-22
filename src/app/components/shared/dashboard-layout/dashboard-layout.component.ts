@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../services/auth.service';
 import { NgIcon } from '@ng-icons/core';
 import { UserAvatarDropdownComponent } from '../user-avatar-dropdown/user-avatar-dropdown.component';
 
