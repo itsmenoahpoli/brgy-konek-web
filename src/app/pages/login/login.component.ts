@@ -11,6 +11,7 @@ import { AuthService } from '../../services/auth.service';
 import { AuthLayoutComponent } from '../../components/shared/auth-layout/auth-layout.component';
 import { StatusModalComponent } from '../../components/shared/status-modal/status-modal.component';
 import { OtpModalComponent } from '../../components/shared/otp-modal/otp-modal.component';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,7 @@ import { OtpModalComponent } from '../../components/shared/otp-modal/otp-modal.c
     AuthLayoutComponent,
     StatusModalComponent,
     OtpModalComponent,
+    NgIcon,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
@@ -47,6 +49,12 @@ export class LoginComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
+  }
+
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/home']);
+    }
   }
 
   onSubmit(): void {

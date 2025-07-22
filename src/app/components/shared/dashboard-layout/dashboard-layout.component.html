@@ -26,17 +26,13 @@
       <span class="font-bold text-lg" *ngIf="sidebarOpen">Dashboard</span>
     </div>
     <ul class="mt-8 space-y-4 px-4 relative z-10" *ngIf="sidebarOpen">
-      <li class="hover:text-indigo-200 cursor-pointer flex items-center gap-3">
-        <ng-icon name="heroHome" class="w-7 h-7"></ng-icon>
-        Home
-      </li>
-      <li class="hover:text-indigo-200 cursor-pointer flex items-center gap-3">
-        <ng-icon name="heroUser" class="w-7 h-7"></ng-icon>
-        Profile
-      </li>
-      <li class="hover:text-indigo-200 cursor-pointer flex items-center gap-3">
-        <ng-icon name="heroCog" class="w-7 h-7"></ng-icon>
-        Settings
+      <li
+        *ngFor="let link of sidebarLinks"
+        (click)="goToSidebarLink(link)"
+        class="hover:text-indigo-200 cursor-pointer flex items-center gap-3"
+      >
+        <ng-icon [name]="link.icon" class="w-7 h-7"></ng-icon>
+        {{ link.label }}
       </li>
     </ul>
   </div>
@@ -51,6 +47,30 @@
       ></app-user-avatar-dropdown>
     </nav>
     <main class="flex-1 p-6 bg-gradient-to-br from-blue-50 to-indigo-100">
+      <nav
+        *ngIf="breadcrumbs.length"
+        class="mb-4 flex items-center text-sm text-gray-600 space-x-2"
+      >
+        <ng-container
+          *ngFor="let breadcrumb of breadcrumbs; let i = index; let last = last"
+        >
+          <span *ngIf="i === 0">{{ breadcrumb.label }}</span>
+          <a
+            *ngIf="i === 1"
+            [routerLink]="breadcrumb.url"
+            class="hover:underline"
+            >{{ breadcrumb.label }}</a
+          >
+          <a
+            *ngIf="i > 1 && !last"
+            [routerLink]="breadcrumb.url"
+            class="hover:underline"
+            >{{ breadcrumb.label }}</a
+          >
+          <span *ngIf="i > 1 && last">{{ breadcrumb.label }}</span>
+          <span *ngIf="!last">/</span>
+        </ng-container>
+      </nav>
       <ng-content></ng-content>
     </main>
   </div>
