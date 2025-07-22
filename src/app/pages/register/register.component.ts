@@ -11,11 +11,18 @@ import {
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.component';
+import { StatusModalComponent } from '../../shared/status-modal/status-modal.component';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AuthLayoutComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    AuthLayoutComponent,
+    StatusModalComponent,
+  ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })

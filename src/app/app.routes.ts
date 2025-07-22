@@ -36,6 +36,11 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'home',
+    loadComponent: () =>
+      import('./pages/user/home/home.component').then((m) => m.HomeComponent),
+  },
+  {
     path: 'verify-otp',
     loadComponent: () =>
       import('./pages/verify-otp/verify-otp.component').then(

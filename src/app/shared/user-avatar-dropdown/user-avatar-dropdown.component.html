@@ -1,0 +1,36 @@
+<div
+  class="relative"
+  (click)="toggleDropdown()"
+  tabindex="0"
+  (blur)="closeDropdown()"
+>
+  <button type="button" class="flex items-center focus:outline-none">
+    <ng-icon name="heroUserCircle" class="w-9 h-9 text-gray-700"></ng-icon>
+  </button>
+  <div
+    *ngIf="dropdownOpen"
+    class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50"
+  >
+    <button
+      (click)="onMyAccount($event)"
+      class="w-full text-left text-sm px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+    >
+      <ng-icon name="heroUser" class="w-5 h-5"></ng-icon>
+      My Account
+    </button>
+    <button
+      (click)="onUpdatePassword($event)"
+      class="w-full text-left text-sm px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+    >
+      <ng-icon name="heroKey" class="w-5 h-5"></ng-icon>
+      Update Password
+    </button>
+    <button
+      (click)="onLogout($event)"
+      class="w-full text-left text-sm px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+    >
+      <ng-icon name="heroArrowRightOnRectangle" class="w-5 h-5"></ng-icon>
+      Logout
+    </button>
+  </div>
+</div>

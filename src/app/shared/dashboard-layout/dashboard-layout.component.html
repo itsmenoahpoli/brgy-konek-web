@@ -1,0 +1,57 @@
+<div class="dashboard-layout flex min-h-screen">
+  <div
+    class="sidebar bg-cover bg-center text-white transition-all duration-300 relative"
+    [ngClass]="{ 'w-64': sidebarOpen, 'w-16': !sidebarOpen }"
+    style="background-image: url('assets/images/splash-bg.png')"
+  >
+    <div class="sidebar-overlay absolute inset-0 z-0"></div>
+    <button
+      (click)="toggleSidebar()"
+      class="absolute top-4 right-4 z-20 focus:outline-none"
+    >
+      <ng-icon *ngIf="sidebarOpen" name="heroXMark" class="w-6 h-6"></ng-icon>
+      <ng-icon *ngIf="!sidebarOpen" name="heroBars3" class="w-6 h-6"></ng-icon>
+    </button>
+    <div
+      class="flex flex-col items-center justify-center h-36 relative z-10 mb-8"
+    >
+      <img
+        src="assets/images/brand-logo.png"
+        alt="Brand Logo"
+        class="h-36 w-auto mt-4"
+        *ngIf="sidebarOpen"
+      />
+    </div>
+    <div class="flex items-center justify-between h-16 px-4 relative z-10">
+      <span class="font-bold text-lg" *ngIf="sidebarOpen">Dashboard</span>
+    </div>
+    <ul class="mt-8 space-y-4 px-4 relative z-10" *ngIf="sidebarOpen">
+      <li class="hover:text-indigo-200 cursor-pointer flex items-center gap-3">
+        <ng-icon name="heroHome" class="w-7 h-7"></ng-icon>
+        Home
+      </li>
+      <li class="hover:text-indigo-200 cursor-pointer flex items-center gap-3">
+        <ng-icon name="heroUser" class="w-7 h-7"></ng-icon>
+        Profile
+      </li>
+      <li class="hover:text-indigo-200 cursor-pointer flex items-center gap-3">
+        <ng-icon name="heroCog" class="w-7 h-7"></ng-icon>
+        Settings
+      </li>
+    </ul>
+  </div>
+  <div class="flex-1 flex flex-col">
+    <nav
+      class="navbar bg-white shadow h-16 flex items-center px-6 justify-between flex-wrap"
+    >
+      <span class="font-semibold text-gray-700">Navbar</span>
+      <app-user-avatar-dropdown
+        class="ml-auto"
+        (logout)="logout()"
+      ></app-user-avatar-dropdown>
+    </nav>
+    <main class="flex-1 p-6 bg-gradient-to-br from-blue-50 to-indigo-100">
+      <ng-content></ng-content>
+    </main>
+  </div>
+</div>

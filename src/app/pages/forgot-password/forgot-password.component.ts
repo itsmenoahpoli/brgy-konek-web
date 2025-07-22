@@ -9,7 +9,7 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.component';
 import { AuthService } from '../../services/auth.service';
-import { SuccessModalComponent } from '../../shared/success-modal/success-modal.component';
+import { StatusModalComponent } from '../../shared/status-modal/status-modal.component';
 
 @Component({
   selector: 'app-forgot-password',
@@ -19,7 +19,7 @@ import { SuccessModalComponent } from '../../shared/success-modal/success-modal.
     ReactiveFormsModule,
     RouterModule,
     AuthLayoutComponent,
-    SuccessModalComponent,
+    StatusModalComponent,
   ],
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],

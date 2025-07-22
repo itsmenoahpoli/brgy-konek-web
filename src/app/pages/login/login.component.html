@@ -197,21 +197,23 @@
   </div>
 </div>
 
-<app-success-modal
+<app-status-modal
   [isVisible]="showSuccessModal"
+  type="success"
   title="Login Successful!"
   message="Welcome back! Redirecting to your profile..."
   [autoCloseDelay]="2000"
   (modalClosed)="onSuccessModalClosed()"
-></app-success-modal>
+></app-status-modal>
 
-<app-success-modal
+<app-status-modal
   [isVisible]="showOtpSuccessModal"
+  type="success"
   title="OTP Sent Successfully!"
   message="Verification code has been sent to your email. Redirecting to verification page..."
   [autoCloseDelay]="2000"
   (modalClosed)="onOtpSuccessModalClosed()"
-></app-success-modal>
+></app-status-modal>
 
 <app-otp-modal
   [isVisible]="showOtpModal"

@@ -9,8 +9,9 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.component';
-import { SuccessModalComponent } from '../../shared/success-modal/success-modal.component';
+import { StatusModalComponent } from '../../shared/status-modal/status-modal.component';
 import { OtpModalComponent } from '../../shared/otp-modal/otp-modal.component';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,7 @@ import { OtpModalComponent } from '../../shared/otp-modal/otp-modal.component';
     ReactiveFormsModule,
     RouterModule,
     AuthLayoutComponent,
-    SuccessModalComponent,
+    StatusModalComponent,
     OtpModalComponent,
   ],
   templateUrl: './login.component.html',
@@ -115,7 +116,7 @@ export class LoginComponent {
           this.authService.resetLoginAttempts(data.email);
           this.showOtpModal = false;
           this.otpModal.resetForm();
-          this.router.navigate(['/profile']);
+          this.router.navigate(['/home']);
         } else {
           this.otpModal.setError(
             response.message || 'Invalid OTP. Please try again.'
@@ -166,7 +167,7 @@ export class LoginComponent {
 
   onSuccessModalClosed(): void {
     this.showSuccessModal = false;
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/home']);
   }
 
   onOtpSuccessModalClosed(): void {

@@ -7,58 +7,52 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgIcon } from '@ng-icons/core';
+
+export type StatusModalType = 'success' | 'error' | 'info';
 
 @Component({
-  selector: 'app-success-modal',
+  selector: 'app-status-modal',
   standalone: true,
-  imports: [CommonModule, NgIcon],
-  templateUrl: './success-modal.component.html',
-  styles: [],
+  imports: [CommonModule],
+  templateUrl: './status-modal.component.html',
+  styleUrl: './status-modal.component.scss',
 })
-export class SuccessModalComponent implements OnInit, OnDestroy {
+export class StatusModalComponent implements OnInit, OnDestroy {
   @Input() set isVisible(value: boolean) {
-    console.log('SuccessModal isVisible changed to:', value);
     this._isVisible = value;
   }
   get isVisible(): boolean {
     return this._isVisible;
   }
   private _isVisible = false;
-  @Input() title = 'Success!';
-  @Input() message = 'Operation completed successfully.';
+  @Input() type: StatusModalType = 'info';
+  @Input() title = '';
+  @Input() message = '';
+  @Input() buttonText = 'OK';
   @Input() autoCloseDelay = 2000;
   @Output() modalClosed = new EventEmitter<void>();
-
   private timeoutId?: number;
-
   ngOnInit(): void {
-    console.log('SuccessModal ngOnInit - isVisible:', this.isVisible);
-    if (this.isVisible && this.autoCloseDelay > 0) {
+    if (this.isVisible && this.type === 'success' && this.autoCloseDelay > 0) {
       this.startAutoCloseTimer();
     }
   }
-
   ngOnDestroy(): void {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
   }
-
   onBackdropClick(event: Event): void {
     if (event.target === event.currentTarget) {
       this.closeModal();
     }
   }
-
   private startAutoCloseTimer(): void {
     this.timeoutId = window.setTimeout(() => {
       this.closeModal();
     }, this.autoCloseDelay);
   }
-
-  private closeModal(): void {
-    console.log('SuccessModal closeModal called');
+  closeModal(): void {
     this._isVisible = false;
     this.modalClosed.emit();
     if (this.timeoutId) {

@@ -105,26 +105,29 @@
   </form>
 </app-auth-layout>
 
-<app-success-modal
+<app-status-modal
   [isVisible]="showSuccessModal"
+  type="success"
   title="OTP Verified Successfully!"
   message="Your account has been verified. Redirecting to your profile..."
   [autoCloseDelay]="3000"
   (modalClosed)="onSuccessModalClosed()"
-></app-success-modal>
+></app-status-modal>
 
-<app-error-modal
+<app-status-modal
   [isVisible]="showErrorModal"
+  type="error"
   [title]="errorModalTitle"
   [message]="errorModalMessage"
   buttonText="OK"
   (modalClosed)="onErrorModalClosed()"
-></app-error-modal>
+></app-status-modal>
 
-<app-info-modal
+<app-status-modal
   [isVisible]="showInfoModal"
+  type="info"
   title="OTP Sent Successfully!"
   message="A new OTP code has been sent to your email. Please check your inbox."
   buttonText="OK"
   (modalClosed)="onInfoModalClosed()"
-></app-info-modal>
+></app-status-modal>

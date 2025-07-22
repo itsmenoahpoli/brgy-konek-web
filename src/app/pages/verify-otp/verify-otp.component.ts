@@ -9,9 +9,7 @@ import {
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.component';
-import { SuccessModalComponent } from '../../shared/success-modal/success-modal.component';
-import { ErrorModalComponent } from '../../shared/error-modal/error-modal.component';
-import { InfoModalComponent } from '../../shared/info-modal/info-modal.component';
+import { StatusModalComponent } from '../../shared/status-modal/status-modal.component';
 
 @Component({
   selector: 'app-verify-otp',
@@ -21,9 +19,7 @@ import { InfoModalComponent } from '../../shared/info-modal/info-modal.component
     ReactiveFormsModule,
     RouterModule,
     AuthLayoutComponent,
-    SuccessModalComponent,
-    ErrorModalComponent,
-    InfoModalComponent,
+    StatusModalComponent,
   ],
   templateUrl: './verify-otp.component.html',
   styleUrls: ['./verify-otp.component.scss'],
@@ -90,7 +86,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
             if (response.success) {
               this.showSuccessModal = true;
               setTimeout(() => {
-                this.router.navigate(['/profile']);
+                this.router.navigate(['/home']);
               }, 3000);
             } else {
               this.errorMessage =
@@ -106,7 +102,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
               );
               this.showSuccessModal = true;
               setTimeout(() => {
-                this.router.navigate(['/profile']);
+                this.router.navigate(['/home']);
               }, 3000);
             } else if (
               error.error &&
@@ -169,7 +165,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
 
   onSuccessModalClosed(): void {
     this.showSuccessModal = false;
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/home']);
   }
 
   onErrorModalClosed(): void {

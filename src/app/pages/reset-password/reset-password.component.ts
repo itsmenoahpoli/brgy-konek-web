@@ -10,6 +10,7 @@ import {
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.component';
 import { AuthService } from '../../services/auth.service';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-reset-password',

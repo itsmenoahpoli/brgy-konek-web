@@ -1,0 +1,86 @@
+<div
+  *ngIf="isVisible"
+  class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+  (click)="onBackdropClick($event)"
+>
+  <div
+    class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+  >
+    <div class="mt-3 text-center">
+      <div
+        [ngClass]="{
+          'bg-green-100': type === 'success',
+          'bg-red-100': type === 'error',
+          'bg-blue-100': type === 'info'
+        }"
+        class="mx-auto flex items-center justify-center h-12 w-12 rounded-full"
+      >
+        <ng-container [ngSwitch]="type">
+          <svg
+            *ngSwitchCase="'success'"
+            class="h-6 w-6 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            ></path>
+          </svg>
+          <svg
+            *ngSwitchCase="'error'"
+            class="h-6 w-6 text-red-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+            ></path>
+          </svg>
+          <svg
+            *ngSwitchCase="'info'"
+            class="h-6 w-6 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+        </ng-container>
+      </div>
+      <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">
+        {{ title }}
+      </h3>
+      <div class="mt-2 px-7 py-3">
+        <p class="text-sm text-gray-500">{{ message }}</p>
+      </div>
+      <div *ngIf="type !== 'success'" class="items-center px-4 py-3">
+        <button
+          (click)="closeModal()"
+          [ngClass]="{
+            'bg-red-500 hover:bg-red-600 focus:ring-red-300': type === 'error',
+            'bg-blue-500 hover:bg-blue-600 focus:ring-blue-300': type === 'info'
+          }"
+          class="px-4 py-2 text-white text-base font-medium rounded-md w-full shadow-sm focus:outline-none focus:ring-2"
+        >
+          {{ buttonText }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
