@@ -8,6 +8,8 @@ import {
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.component';
+import { AuthService } from '../../services/auth.service';
+import { SuccessModalComponent } from '../../shared/success-modal/success-modal.component';
 
 @Component({
   selector: 'app-forgot-password',
@@ -17,6 +19,7 @@ import { AuthLayoutComponent } from '../../shared/auth-layout/auth-layout.compon
     ReactiveFormsModule,
     RouterModule,
     AuthLayoutComponent,
+    SuccessModalComponent,
   ],
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],
@@ -26,8 +29,14 @@ export class ForgotPasswordComponent {
   isLoading = false;
   errorMessage = '';
   successMessage = '';
+  showSuccessModal = false;
+  successModalMessage = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });
@@ -38,20 +47,35 @@ export class ForgotPasswordComponent {
       this.isLoading = true;
       this.errorMessage = '';
       this.successMessage = '';
-
       const email = this.forgotPasswordForm.get('email')?.value;
-
-      setTimeout(() => {
-        this.isLoading = false;
-        this.successMessage =
-          'Reset code sent to your email. Please check your inbox.';
-
-        setTimeout(() => {
-          this.router.navigate(['/reset-password'], {
-            queryParams: { email: email },
-          });
-        }, 2000);
-      }, 1500);
+      this.authService.sendOTP(email).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response.success) {
+            this.successModalMessage =
+              'Reset code sent to your email. Please check your inbox.';
+            this.showSuccessModal = true;
+            setTimeout(() => {
+              this.showSuccessModal = false;
+              this.router.navigate(['/reset-password'], {
+                queryParams: { email: email },
+              });
+            }, 2000);
+          } else {
+            this.errorMessage =
+              response.message ||
+              'Failed to send reset code. Please try again.';
+          }
+        },
+        error: () => {
+          this.isLoading = false;
+          this.errorMessage = 'Failed to send reset code. Please try again.';
+        },
+      });
     }
+  }
+
+  onSuccessModalClosed() {
+    this.showSuccessModal = false;
   }
 }

@@ -36,6 +36,7 @@ export class LoginComponent {
   showOtpLoadingModal = false;
   showOtpSuccessModal = false;
   showOtpModal = false;
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -181,5 +182,9 @@ export class LoginComponent {
     const email = this.loginForm.get('email')?.value || 'test@example.com';
     console.log('Testing redirect to verify-otp with email:', email);
     this.router.navigate(['/verify-otp'], { queryParams: { email } });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

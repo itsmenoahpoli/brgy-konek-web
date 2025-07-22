@@ -26,6 +26,27 @@ export class RegisterComponent {
   isDragOver = false;
   selectedFileName = '';
   showSuccessDialog = false;
+  showPassword = false;
+  showConfirmPassword = false;
+
+  get passwordValidationStatus() {
+    const password = this.registerForm.get('password')?.value || '';
+    return {
+      length: password.length >= 8 && password.length <= 20,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /\d/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
 
   constructor(
     private fb: FormBuilder,

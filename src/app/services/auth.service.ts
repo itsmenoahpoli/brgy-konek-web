@@ -276,4 +276,25 @@ export class AuthService {
       )
     );
   }
+
+  resetPassword(
+    email: string,
+    otp_code: string,
+    new_password: string
+  ): Observable<{ success: boolean; message: string }> {
+    return from(
+      ApiService.post('/auth/reset-password', {
+        email,
+        otp_code,
+        new_password,
+      }).then((response) => ({
+        success: response.success,
+        message:
+          response.message ||
+          (response.success
+            ? 'Password reset successful'
+            : 'Password reset failed'),
+      }))
+    );
+  }
 }
