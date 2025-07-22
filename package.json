@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "start": "node dist/gratitudeapp/server/server.mjs"
+    "start": "node dist/brgy-konek-web/server/server.mjs"
   },
   "private": true,
   "dependencies": {
