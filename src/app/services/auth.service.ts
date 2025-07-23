@@ -12,6 +12,7 @@ export interface User {
   barangay?: string;
   city?: string;
   province?: string;
+  role?: string;
 }
 
 interface ApiUser {
@@ -24,6 +25,7 @@ interface ApiUser {
   barangay?: string;
   city?: string;
   province?: string;
+  user_type?: string;
 }
 
 @Injectable({
@@ -62,6 +64,7 @@ export class AuthService {
               barangay: response.user.barangay,
               city: response.user.city,
               province: response.user.province,
+              role: response.user.user_type,
             };
 
             localStorage.setItem('currentUser', JSON.stringify(user));
@@ -115,6 +118,7 @@ export class AuthService {
                 barangay: response.user.barangay,
                 city: response.user.city,
                 province: response.user.province,
+                role: response.user.user_type,
               };
 
               localStorage.setItem('currentUser', JSON.stringify(user));
@@ -153,6 +157,7 @@ export class AuthService {
                 barangay: response.user.barangay,
                 city: response.user.city,
                 province: response.user.province,
+                role: response.user.user_type,
               };
 
               localStorage.setItem('currentUser', JSON.stringify(user));

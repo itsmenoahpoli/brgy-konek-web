@@ -34,6 +34,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   errorModalTitle = '';
   errorModalMessage = '';
   email = '';
+  userType = '';
   countdownTimer = 0;
   canResendOTP = true;
   private countdownInterval: any;
@@ -55,6 +56,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.email = params['email'] || '';
+      this.userType = params['user_type'] || '';
       if (!this.email) {
         this.router.navigate(['/login']);
       }
@@ -73,6 +75,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
 
     this.route.queryParams.subscribe((params) => {
       const emailFromUrl = params['email'] || '';
+      const userTypeFromUrl = params['user_type'] || '';
 
       if (this.otpForm.valid && emailFromUrl) {
         const { otp } = this.otpForm.value;
@@ -86,7 +89,16 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
             if (response.success) {
               this.showSuccessModal = true;
               setTimeout(() => {
-                this.router.navigate(['/home']);
+                if (
+                  userTypeFromUrl === 'admin' ||
+                  userTypeFromUrl === 'staff'
+                ) {
+                  this.router.navigate(['/admin/dashboard']);
+                } else if (userTypeFromUrl === 'resident') {
+                  this.router.navigate(['/resident/home']);
+                } else {
+                  this.router.navigate(['/home']);
+                }
               }, 3000);
             } else {
               this.errorMessage =
@@ -165,7 +177,13 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
 
   onSuccessModalClosed(): void {
     this.showSuccessModal = false;
-    this.router.navigate(['/home']);
+    if (this.userType === 'admin' || this.userType === 'staff') {
+      this.router.navigate(['/admin/dashboard']);
+    } else if (this.userType === 'resident') {
+      this.router.navigate(['/resident/home']);
+    } else {
+      this.router.navigate(['/home']);
+    }
   }
 
   onErrorModalClosed(): void {

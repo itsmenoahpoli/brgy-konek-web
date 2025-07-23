@@ -74,7 +74,8 @@ export class LoginComponent {
           this.isLoading = false;
           if (response.success) {
             this.authService.resetLoginAttempts(email);
-            this.requestOTPAndRedirect(email);
+            const userType = response.user?.role || '';
+            this.requestOTPAndRedirect(email, userType);
           } else {
             this.authService.incrementLoginAttempts(email);
             const attempts = this.authService.getLoginAttempts(email);
@@ -141,7 +142,7 @@ export class LoginComponent {
     this.otpModal.resetForm();
   }
 
-  private requestOTPAndRedirect(email: string): void {
+  private requestOTPAndRedirect(email: string, userType: string): void {
     console.log('Requesting OTP for email:', email);
     this.showOtpLoadingModal = true;
     this.authService.sendOTP(email).subscribe({
@@ -154,7 +155,9 @@ export class LoginComponent {
           setTimeout(() => {
             console.log('Auto redirecting to verify-otp after 2 seconds');
             this.showOtpSuccessModal = false;
-            this.router.navigate(['/verify-otp'], { queryParams: { email } });
+            this.router.navigate(['/verify-otp'], {
+              queryParams: { email, user_type: userType },
+            });
           }, 2000);
         } else {
           this.errorMessage = 'Failed to send OTP. Please try again.';
@@ -181,15 +184,21 @@ export class LoginComponent {
     console.log('OTP success modal closed, redirecting to verify-otp');
     this.showOtpSuccessModal = false;
     const email = this.loginForm.get('email')?.value;
+    const userType = this.authService.getCurrentUser()?.role || '';
     console.log('Redirecting to verify-otp with email:', email);
-    this.router.navigate(['/verify-otp'], { queryParams: { email } });
+    this.router.navigate(['/verify-otp'], {
+      queryParams: { email, user_type: userType },
+    });
   }
 
   testRedirect(): void {
     console.log('Test redirect clicked');
     const email = this.loginForm.get('email')?.value || 'test@example.com';
+    const userType = this.authService.getCurrentUser()?.role || '';
     console.log('Testing redirect to verify-otp with email:', email);
-    this.router.navigate(['/verify-otp'], { queryParams: { email } });
+    this.router.navigate(['/verify-otp'], {
+      queryParams: { email, user_type: userType },
+    });
   }
 
   togglePasswordVisibility(): void {

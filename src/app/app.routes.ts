@@ -38,7 +38,9 @@ export const routes: Routes = [
   {
     path: 'home',
     loadComponent: () =>
-      import('./pages/user/home/home.component').then((m) => m.HomeComponent),
+      import('./pages/resident/home/home.component').then(
+        (m) => m.HomeComponent
+      ),
   },
   {
     path: 'verify-otp',
@@ -46,5 +48,42 @@ export const routes: Routes = [
       import('./pages/verify-otp/verify-otp.component').then(
         (m) => m.VerifyOtpComponent
       ),
+  },
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import(
+        './components/shared/dashboard-layout/dashboard-layout.component'
+      ).then((m) => m.DashboardLayoutComponent),
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/admin/dashboard/dashboard.component').then(
+            (m) => m.DashboardComponent
+          ),
+      },
+      {
+        path: 'accounts',
+        loadComponent: () =>
+          import('./pages/admin/accounts/accounts.component').then(
+            (m) => m.AccountsComponent
+          ),
+      },
+      {
+        path: 'announcements',
+        loadComponent: () =>
+          import('./pages/admin/announcements/announcements.component').then(
+            (m) => m.AnnouncementsComponent
+          ),
+      },
+      {
+        path: 'complaints',
+        loadComponent: () =>
+          import('./pages/admin/complaints/complaints.component').then(
+            (m) => m.ComplaintsComponent
+          ),
+      },
+    ],
   },
 ];

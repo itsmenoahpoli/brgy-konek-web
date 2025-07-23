@@ -21,16 +21,42 @@ import { filter } from 'rxjs';
 export class DashboardLayoutComponent {
   sidebarOpen = true;
   breadcrumbs: { label: string; url: string }[] = [];
-  sidebarLinks = [
-    { label: 'Home', icon: 'heroHome', route: '/home' },
-    { label: 'Profile', icon: 'heroUser', route: '/profile' },
-    { label: 'Settings', icon: 'heroCog', route: '/settings' },
-  ];
+  sidebarLinks: { label: string; icon: string; route: string }[] = [];
   constructor(
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
   ) {
+    const user = this.authService.getCurrentUser();
+    if (user?.role === 'resident') {
+      this.sidebarLinks = [
+        { label: 'Complaints', icon: 'heroHome', route: '/complaints' },
+        { label: 'Announcements', icon: 'heroUser', route: '/announcements' },
+        { label: 'List of Reports', icon: 'heroCog', route: '/reports' },
+      ];
+    } else if (user?.role === 'admin' || user?.role === 'staff') {
+      this.sidebarLinks = [
+        { label: 'Dashboard', icon: 'heroHome', route: 'admin/dashboard' },
+        {
+          label: 'Pending Approval',
+          icon: 'heroUser',
+          route: 'admin/pending-approval',
+        },
+        { label: 'Complaints', icon: 'heroCog', route: 'admin/complaints' },
+        {
+          label: 'Announcements',
+          icon: 'heroEye',
+          route: 'admin/announcements',
+        },
+        {
+          label: 'Manage Accounts',
+          icon: 'heroUserCircle',
+          route: 'admin/accounts',
+        },
+      ];
+    } else {
+      this.sidebarLinks = [];
+    }
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
