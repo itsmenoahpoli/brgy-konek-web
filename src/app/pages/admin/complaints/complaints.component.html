@@ -1,1 +1,48 @@
-<p>complaints works!</p>
+<app-dashboard-layout
+  title="Complaints"
+  subtitle="View and manage all resident complaints"
+>
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white border border-gray-200">
+      <thead>
+        <tr>
+          <th class="px-4 py-2 border-b">Resident ID</th>
+          <th class="px-4 py-2 border-b">Category</th>
+          <th class="px-4 py-2 border-b">Date of Report</th>
+          <th class="px-4 py-2 border-b">Content</th>
+          <th class="px-4 py-2 border-b">Attachments</th>
+          <th class="px-4 py-2 border-b">Status</th>
+          <th class="px-4 py-2 border-b">Created At</th>
+          <th class="px-4 py-2 border-b">Updated At</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let complaint of complaints$ | async">
+          <td class="px-4 py-2 border-b">{{ complaint.resident_id }}</td>
+          <td class="px-4 py-2 border-b">{{ complaint.category }}</td>
+          <td class="px-4 py-2 border-b">
+            {{ complaint.date_of_report | date : "medium" }}
+          </td>
+          <td class="px-4 py-2 border-b">{{ complaint.complaint_content }}</td>
+          <td class="px-4 py-2 border-b">
+            <ng-container
+              *ngIf="complaint.attachments?.length; else noAttachments"
+            >
+              <span *ngFor="let att of complaint.attachments; let last = last">
+                {{ att }}<span *ngIf="!last">, </span>
+              </span>
+            </ng-container>
+            <ng-template #noAttachments>-</ng-template>
+          </td>
+          <td class="px-4 py-2 border-b">{{ complaint.status }}</td>
+          <td class="px-4 py-2 border-b">
+            {{ complaint.created_at | date : "medium" }}
+          </td>
+          <td class="px-4 py-2 border-b">
+            {{ complaint.updated_at | date : "medium" }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</app-dashboard-layout>

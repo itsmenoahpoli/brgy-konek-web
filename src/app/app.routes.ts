@@ -50,40 +50,31 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'admin',
+    path: 'admin/home',
     loadComponent: () =>
-      import(
-        './components/shared/dashboard-layout/dashboard-layout.component'
-      ).then((m) => m.DashboardLayoutComponent),
-    children: [
-      {
-        path: 'dashboard',
-        loadComponent: () =>
-          import('./pages/admin/dashboard/dashboard.component').then(
-            (m) => m.DashboardComponent
-          ),
-      },
-      {
-        path: 'accounts',
-        loadComponent: () =>
-          import('./pages/admin/accounts/accounts.component').then(
-            (m) => m.AccountsComponent
-          ),
-      },
-      {
-        path: 'announcements',
-        loadComponent: () =>
-          import('./pages/admin/announcements/announcements.component').then(
-            (m) => m.AnnouncementsComponent
-          ),
-      },
-      {
-        path: 'complaints',
-        loadComponent: () =>
-          import('./pages/admin/complaints/complaints.component').then(
-            (m) => m.ComplaintsComponent
-          ),
-      },
-    ],
+      import('./pages/admin/dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent
+      ),
+  },
+  {
+    path: 'admin/accounts',
+    loadComponent: () =>
+      import('./pages/admin/accounts/accounts.component').then(
+        (m) => m.AccountsComponent
+      ),
+  },
+  {
+    path: 'admin/announcements',
+    loadComponent: () =>
+      import('./pages/admin/announcements/announcements.component').then(
+        (m) => m.AnnouncementsComponent
+      ),
+  },
+  {
+    path: 'admin/complaints',
+    loadComponent: () =>
+      import('./pages/admin/complaints/complaints.component').then(
+        (m) => m.ComplaintsComponent
+      ),
   },
 ];

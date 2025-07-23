@@ -1,11 +1,33 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  ComplaintsService,
+  Complaint,
+} from '../../../services/complaints.service';
+import { Observable } from 'rxjs';
 import { DashboardLayoutComponent } from '../../../components/shared/dashboard-layout/dashboard-layout.component';
 
 @Component({
   selector: 'app-complaints',
   standalone: true,
-  imports: [DashboardLayoutComponent],
+  imports: [CommonModule, DashboardLayoutComponent],
   templateUrl: './complaints.component.html',
   styleUrls: ['./complaints.component.scss'],
 })
-export class ComplaintsComponent {}
+export class ComplaintsComponent implements OnInit {
+  complaints$!: Observable<Complaint[]>;
+  displayedColumns = [
+    'resident_id',
+    'category',
+    'date_of_report',
+    'complaint_content',
+    'attachments',
+    'status',
+    'created_at',
+    'updated_at',
+  ];
+  constructor(private complaintsService: ComplaintsService) {}
+  ngOnInit(): void {
+    this.complaints$ = this.complaintsService.getComplaints();
+  }
+}

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   Router,
@@ -19,6 +19,8 @@ import { filter } from 'rxjs';
   styleUrls: ['./dashboard-layout.component.scss'],
 })
 export class DashboardLayoutComponent {
+  @Input() title: string = '';
+  @Input() subtitle: string = '';
   sidebarOpen = true;
   breadcrumbs: { label: string; url: string }[] = [];
   sidebarLinks: { label: string; icon: string; route: string }[] = [];
@@ -36,7 +38,7 @@ export class DashboardLayoutComponent {
       ];
     } else if (user?.role === 'admin' || user?.role === 'staff') {
       this.sidebarLinks = [
-        { label: 'Dashboard', icon: 'heroHome', route: 'admin/dashboard' },
+        { label: 'Dashboard', icon: 'heroHome', route: 'admin/home' },
         {
           label: 'Pending Approval',
           icon: 'heroUser',
