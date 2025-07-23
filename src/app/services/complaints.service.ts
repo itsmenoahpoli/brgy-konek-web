@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import apiClient from '../utils/api.util';
 
 export interface Complaint {
   _id: string;
@@ -18,9 +17,12 @@ export interface Complaint {
 export class ComplaintsService {
   private baseUrl = '/complaints';
 
-  constructor(private http: HttpClient) {}
-
-  getComplaints(): Observable<Complaint[]> {
-    return this.http.get<Complaint[]>(this.baseUrl);
+  async getComplaints(): Promise<Complaint[] | undefined> {
+    try {
+      const res = await apiClient.get<Complaint[]>(this.baseUrl);
+      return res.data;
+    } catch (error) {
+      return undefined;
+    }
   }
 }

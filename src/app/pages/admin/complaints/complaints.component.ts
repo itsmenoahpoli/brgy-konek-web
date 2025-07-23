@@ -15,7 +15,7 @@ import { DashboardLayoutComponent } from '../../../components/shared/dashboard-l
   styleUrls: ['./complaints.component.scss'],
 })
 export class ComplaintsComponent implements OnInit {
-  complaints$!: Observable<Complaint[]>;
+  complaints: Complaint[] = [];
   displayedColumns = [
     'resident_id',
     'category',
@@ -27,7 +27,10 @@ export class ComplaintsComponent implements OnInit {
     'updated_at',
   ];
   constructor(private complaintsService: ComplaintsService) {}
-  ngOnInit(): void {
-    this.complaints$ = this.complaintsService.getComplaints();
+  async ngOnInit(): Promise<void> {
+    const response = await this.complaintsService.getComplaints();
+
+    console.log(response);
+    this.complaints = response ?? [];
   }
 }

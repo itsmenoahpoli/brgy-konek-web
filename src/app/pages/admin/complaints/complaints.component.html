@@ -3,45 +3,75 @@
   subtitle="View and manage all resident complaints"
 >
   <div class="overflow-x-auto">
-    <table class="min-w-full bg-white border border-gray-200">
+    <table class="min-w-full border-separate border-spacing-0 bg-transparent">
       <thead>
         <tr>
-          <th class="px-4 py-2 border-b">Resident ID</th>
-          <th class="px-4 py-2 border-b">Category</th>
-          <th class="px-4 py-2 border-b">Date of Report</th>
-          <th class="px-4 py-2 border-b">Content</th>
-          <th class="px-4 py-2 border-b">Attachments</th>
-          <th class="px-4 py-2 border-b">Status</th>
-          <th class="px-4 py-2 border-b">Created At</th>
-          <th class="px-4 py-2 border-b">Updated At</th>
+          <th class="px-4 py-2 font-medium text-left">Resident ID</th>
+          <th class="px-4 py-2 font-medium text-left">Category</th>
+          <th class="px-4 py-2 font-medium text-left">Date of Report</th>
+          <th class="px-4 py-2 font-medium text-left">Content</th>
+          <th class="px-4 py-2 font-medium text-left">Attachments</th>
+          <th class="px-4 py-2 font-medium text-left">Status</th>
+          <th class="px-4 py-2 font-medium text-left">Created At</th>
+          <th class="px-4 py-2 font-medium text-left">Updated At</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let complaint of complaints$ | async">
-          <td class="px-4 py-2 border-b">{{ complaint.resident_id }}</td>
-          <td class="px-4 py-2 border-b">{{ complaint.category }}</td>
-          <td class="px-4 py-2 border-b">
-            {{ complaint.date_of_report | date : "medium" }}
-          </td>
-          <td class="px-4 py-2 border-b">{{ complaint.complaint_content }}</td>
-          <td class="px-4 py-2 border-b">
-            <ng-container
-              *ngIf="complaint.attachments?.length; else noAttachments"
-            >
-              <span *ngFor="let att of complaint.attachments; let last = last">
-                {{ att }}<span *ngIf="!last">, </span>
-              </span>
-            </ng-container>
-            <ng-template #noAttachments>-</ng-template>
-          </td>
-          <td class="px-4 py-2 border-b">{{ complaint.status }}</td>
-          <td class="px-4 py-2 border-b">
-            {{ complaint.created_at | date : "medium" }}
-          </td>
-          <td class="px-4 py-2 border-b">
-            {{ complaint.updated_at | date : "medium" }}
-          </td>
-        </tr>
+        <ng-container *ngIf="complaints as complaints">
+          <tr *ngIf="complaints.length === 0">
+            <td colspan="8" class="py-8 text-center text-gray-400">
+              <svg
+                width="48"
+                height="48"
+                fill="none"
+                viewBox="0 0 24 24"
+                class="mx-auto mb-2"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="#cbd5e1"
+                  stroke-width="2"
+                />
+                <path
+                  d="M8 12h8M12 8v8"
+                  stroke="#cbd5e1"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              No data
+            </td>
+          </tr>
+          <tr *ngFor="let complaint of complaints">
+            <td class="px-4 py-2">{{ complaint.resident_id }}</td>
+            <td class="px-4 py-2">{{ complaint.category }}</td>
+            <td class="px-4 py-2">
+              {{ complaint.date_of_report | date : "medium" }}
+            </td>
+            <td class="px-4 py-2">{{ complaint.complaint_content }}</td>
+            <td class="px-4 py-2">
+              <ng-container
+                *ngIf="complaint.attachments?.length; else noAttachments"
+              >
+                <span
+                  *ngFor="let att of complaint.attachments; let last = last"
+                >
+                  {{ att }}<span *ngIf="!last">, </span>
+                </span>
+              </ng-container>
+              <ng-template #noAttachments>-</ng-template>
+            </td>
+            <td class="px-4 py-2">{{ complaint.status }}</td>
+            <td class="px-4 py-2">
+              {{ complaint.created_at | date : "medium" }}
+            </td>
+            <td class="px-4 py-2">
+              {{ complaint.updated_at | date : "medium" }}
+            </td>
+          </tr>
+        </ng-container>
       </tbody>
     </table>
   </div>
