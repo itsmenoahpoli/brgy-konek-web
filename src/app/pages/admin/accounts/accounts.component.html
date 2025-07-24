@@ -101,3 +101,279 @@
     </table>
   </div>
 </app-dashboard-layout>
+
+<ng-container *ngIf="isCreateUserModalVisible">
+  <div
+    class="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full z-50 flex items-center justify-center"
+  >
+    <div
+      class="mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white"
+    >
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-medium text-gray-900">Create User</h3>
+        <button
+          type="button"
+          class="text-gray-400 hover:text-gray-600"
+          (click)="closeCreateUserModal()"
+        >
+          &times;
+        </button>
+      </div>
+      <form (ngSubmit)="submitCreateUser()" autocomplete="off">
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Name</label
+          >
+          <input
+            type="text"
+            class="w-full border rounded px-3 py-2"
+            [(ngModel)]="createUserForm.name"
+            name="name"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Email</label
+          >
+          <input
+            type="email"
+            class="w-full border rounded px-3 py-2"
+            [(ngModel)]="createUserForm.email"
+            name="email"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Mobile Number</label
+          >
+          <input
+            type="text"
+            class="w-full border rounded px-3 py-2"
+            [ngClass]="{ 'border-red-500': mobileNumberError }"
+            [(ngModel)]="createUserForm.mobile_number"
+            name="mobile_number"
+            required
+            (blur)="validateMobileNumber()"
+            (input)="validateMobileNumber()"
+          />
+          <div *ngIf="mobileNumberError" class="text-red-500 text-xs mt-1">
+            {{ mobileNumberError }}
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Password</label
+          >
+          <div class="relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="w-full border rounded px-3 py-2 pr-10"
+              [ngClass]="{ 'border-red-500': passwordError }"
+              [(ngModel)]="createUserForm.password"
+              name="password"
+              required
+              (blur)="validatePassword()"
+              (input)="validatePassword()"
+            />
+            <button
+              type="button"
+              (click)="showPassword = !showPassword"
+              class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400"
+            >
+              <svg
+                *ngIf="!showPassword"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-.274.832-.67 1.613-1.176 2.318M15.54 17.44A9.956 9.956 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.042-3.338"
+                />
+              </svg>
+              <svg
+                *ngIf="showPassword"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.042-3.338m1.664-2.486A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.965 9.965 0 01-4.293 5.411M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 3l18 18"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              (click)="generatePassword()"
+              class="absolute inset-y-0 right-10 flex items-center px-2 text-blue-600 text-xs"
+            >
+              Generate
+            </button>
+          </div>
+          <div *ngIf="passwordError" class="text-red-500 text-xs mt-1">
+            {{ passwordError }}
+          </div>
+          <ul class="mt-2 space-y-1 text-xs">
+            <li
+              [class.text-green-600]="passwordValidationStatus.length"
+              [class.text-red-500]="!passwordValidationStatus.length"
+            >
+              Minimum 8 and maximum 20 characters
+            </li>
+            <li
+              [class.text-green-600]="passwordValidationStatus.uppercase"
+              [class.text-red-500]="!passwordValidationStatus.uppercase"
+            >
+              At least one uppercase letter
+            </li>
+            <li
+              [class.text-green-600]="passwordValidationStatus.lowercase"
+              [class.text-red-500]="!passwordValidationStatus.lowercase"
+            >
+              At least one lowercase letter
+            </li>
+            <li
+              [class.text-green-600]="passwordValidationStatus.number"
+              [class.text-red-500]="!passwordValidationStatus.number"
+            >
+              At least one number
+            </li>
+            <li
+              [class.text-green-600]="passwordValidationStatus.special"
+              [class.text-red-500]="!passwordValidationStatus.special"
+            >
+              At least one special character (!&#64;#$%^&*)
+            </li>
+          </ul>
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >User Type</label
+          >
+          <select
+            class="w-full border rounded px-3 py-2"
+            [(ngModel)]="createUserForm.user_type"
+            name="user_type"
+          >
+            <option value="resident">Resident</option>
+            <option value="admin">Admin</option>
+            <option value="staff">Staff</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Address</label
+          >
+          <input
+            type="text"
+            class="w-full border rounded px-3 py-2"
+            [(ngModel)]="createUserForm.address"
+            name="address"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Birthdate</label
+          >
+          <input
+            type="date"
+            class="w-full border rounded px-3 py-2"
+            [(ngModel)]="createUserForm.birthdate"
+            name="birthdate"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Barangay Clearance (Image or PDF)</label
+          >
+          <div
+            class="w-full border-2 border-dashed rounded px-3 py-6 text-center cursor-pointer bg-gray-50 hover:bg-gray-100"
+            (drop)="
+              $event.preventDefault();
+              onBarangayClearanceChange(
+                $event.dataTransfer &&
+                  $event.dataTransfer.files &&
+                  $event.dataTransfer.files.length > 0
+                  ? $event.dataTransfer.files[0]
+                  : null
+              )
+            "
+            (dragover)="$event.preventDefault()"
+          >
+            <input
+              type="file"
+              accept="image/*,application/pdf"
+              class="hidden"
+              #fileInput
+              (change)="onBarangayClearanceChange(fileInput.files?.[0] ?? null)"
+            />
+            <div (click)="fileInput && fileInput.click()">
+              <span *ngIf="!createUserForm.barangay_clearance"
+                >Drag & drop or click to select file</span
+              >
+              <span *ngIf="createUserForm.barangay_clearance">{{
+                createUserForm.barangay_clearance.name
+              }}</span>
+            </div>
+          </div>
+        </div>
+        <div
+          *ngIf="createUserError"
+          class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded mb-3"
+        >
+          {{ createUserError }}
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button
+            type="button"
+            class="px-4 py-2 border rounded text-gray-700 bg-white"
+            (click)="closeCreateUserModal()"
+            [disabled]="isSubmitting"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 rounded text-white bg-blue-600"
+            [disabled]="isSubmitting"
+          >
+            {{ isSubmitting ? "Creating..." : "Create" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</ng-container>
+
+<app-status-modal
+  [isVisible]="showStatusModal"
+  [type]="statusModalType"
+  [title]="statusModalTitle"
+  [message]="statusModalMessage"
+  (modalClosed)="closeStatusModal()"
+></app-status-modal>

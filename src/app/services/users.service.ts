@@ -36,18 +36,35 @@ export class UsersService {
     }
   }
 
-  async createUser(user: Partial<User>): Promise<User | undefined> {
+  async createUser(user: Partial<User> | FormData): Promise<User | undefined> {
     try {
-      const res = await apiClient.post(this.endpoint, user);
+      let res;
+      if (user instanceof FormData) {
+        res = await apiClient.post(this.endpoint, user, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      } else {
+        res = await apiClient.post(this.endpoint, user);
+      }
       return res?.data;
     } catch (error) {
       return undefined;
     }
   }
 
-  async updateUser(id: string, user: Partial<User>): Promise<User | undefined> {
+  async updateUser(
+    id: string,
+    user: Partial<User> | FormData
+  ): Promise<User | undefined> {
     try {
-      const res = await apiClient.put(`${this.endpoint}/${id}`, user);
+      let res;
+      if (user instanceof FormData) {
+        res = await apiClient.put(`${this.endpoint}/${id}`, user, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      } else {
+        res = await apiClient.put(`${this.endpoint}/${id}`, user);
+      }
       return res?.data;
     } catch (error) {
       return undefined;
