@@ -6,7 +6,7 @@
     <table class="min-w-full border-separate border-spacing-0 bg-transparent">
       <thead>
         <tr>
-          <th class="px-4 py-2 font-medium text-left">Resident ID</th>
+          <th class="px-4 py-2 font-medium text-left">Resident Name</th>
           <th class="px-4 py-2 font-medium text-left">Category</th>
           <th class="px-4 py-2 font-medium text-left">Date of Report</th>
           <th class="px-4 py-2 font-medium text-left">Content</th>
@@ -14,6 +14,7 @@
           <th class="px-4 py-2 font-medium text-left">Status</th>
           <th class="px-4 py-2 font-medium text-left">Created At</th>
           <th class="px-4 py-2 font-medium text-left">Updated At</th>
+          <th class="px-4 py-2 font-medium text-left">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -45,7 +46,9 @@
             </td>
           </tr>
           <tr *ngFor="let complaint of complaints">
-            <td class="px-4 py-2">{{ complaint.resident_id }}</td>
+            <td class="px-4 py-2">
+              {{ complaint.resident_id.name }}
+            </td>
             <td class="px-4 py-2">{{ complaint.category }}</td>
             <td class="px-4 py-2">
               {{ complaint.date_of_report | date : "medium" }}
@@ -56,23 +59,113 @@
                 *ngIf="complaint.attachments?.length; else noAttachments"
               >
                 <span
-                  *ngFor="let att of complaint.attachments; let last = last"
+                  class="inline-block px-3 py-1 rounded-full bg-green-100 border border-green-500 text-green-700 text-xs font-semibold"
+                  >Waith attachments</span
                 >
-                  {{ att }}<span *ngIf="!last">, </span>
-                </span>
               </ng-container>
               <ng-template #noAttachments>-</ng-template>
             </td>
-            <td class="px-4 py-2">{{ complaint.status }}</td>
+            <td class="px-4 py-2">
+              <ng-container
+                *ngIf="complaint.status === 'published'; else otherStatus"
+              >
+                <span
+                  class="inline-block px-3 py-1 rounded-full bg-blue-100 border border-blue-500 text-blue-700 text-xs font-semibold"
+                  >Published</span
+                >
+              </ng-container>
+              <ng-template #otherStatus>
+                <ng-container
+                  *ngIf="complaint.status === 'draft'; else plainStatus"
+                >
+                  <span
+                    class="inline-block px-3 py-1 rounded-full bg-yellow-100 border border-yellow-500 text-yellow-700 text-xs font-semibold"
+                    >Draft</span
+                  >
+                </ng-container>
+                <ng-template #plainStatus>{{ complaint.status }}</ng-template>
+              </ng-template>
+            </td>
             <td class="px-4 py-2">
               {{ complaint.created_at | date : "medium" }}
             </td>
             <td class="px-4 py-2">
               {{ complaint.updated_at | date : "medium" }}
             </td>
+            <td class="px-4 py-2">
+              <button
+                type="button"
+                class="bg-blue-600 text-white px-3 py-1 rounded"
+                (click)="openViewModal(complaint)"
+              >
+                View Complaint
+              </button>
+            </td>
           </tr>
         </ng-container>
       </tbody>
     </table>
+  </div>
+  <div
+    *ngIf="showViewModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70"
+  >
+    <div
+      class="bg-white w-full max-w-4xl mx-auto p-8 overflow-y-auto relative rounded-lg shadow-lg flex flex-col my-8"
+    >
+      <button
+        (click)="closeViewModal()"
+        class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"
+      >
+        &times;
+      </button>
+      <h2 class="text-2xl font-semibold mb-6">Complaint Details</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <div class="mb-4">
+            <span class="font-medium">Resident Name:</span>
+            {{ selectedComplaint?.resident_id?.name }}
+          </div>
+          <div class="mb-4">
+            <span class="font-medium">Category:</span>
+            {{ selectedComplaint?.category }}
+          </div>
+          <div class="mb-4">
+            <span class="font-medium">Date of Report:</span>
+            {{ selectedComplaint?.date_of_report | date : "medium" }}
+          </div>
+          <div class="mb-4">
+            <span class="font-medium">Status:</span>
+            {{ selectedComplaint?.status }}
+          </div>
+        </div>
+        <div>
+          <div class="mb-4">
+            <span class="font-medium">Created At:</span>
+            {{ selectedComplaint?.created_at | date : "medium" }}
+          </div>
+          <div class="mb-4">
+            <span class="font-medium">Updated At:</span>
+            {{ selectedComplaint?.updated_at | date : "medium" }}
+          </div>
+          <div class="mb-4">
+            <span class="font-medium">Attachments:</span>
+            <ng-container
+              *ngIf="
+                selectedComplaint?.attachments?.length;
+                else noAttachmentsModal
+              "
+              >With attachments</ng-container
+            ><ng-template #noAttachmentsModal>-</ng-template>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6">
+        <span class="font-medium">Content:</span>
+        <div class="mt-2 p-4 border rounded bg-gray-50">
+          {{ selectedComplaint?.complaint_content }}
+        </div>
+      </div>
+    </div>
   </div>
 </app-dashboard-layout>

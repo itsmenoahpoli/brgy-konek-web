@@ -16,6 +16,8 @@ import { DashboardLayoutComponent } from '../../../components/shared/dashboard-l
 })
 export class ComplaintsComponent implements OnInit {
   complaints: Complaint[] = [];
+  showViewModal = false;
+  selectedComplaint: Complaint | null = null;
   displayedColumns = [
     'resident_id',
     'category',
@@ -29,8 +31,41 @@ export class ComplaintsComponent implements OnInit {
   constructor(private complaintsService: ComplaintsService) {}
   async ngOnInit(): Promise<void> {
     const response = await this.complaintsService.getComplaints();
-
-    console.log(response);
-    this.complaints = response ?? [];
+    if (!response) {
+      this.complaints = [];
+      return;
+    }
+    const complaintsWithResidents = await Promise.all(
+      response.map(async (complaint) => {
+        if (typeof complaint.resident_id === 'string') {
+          const resident = await this.complaintsService.getResidentById(
+            complaint.resident_id
+          );
+          return {
+            ...complaint,
+            resident_id: resident ?? {
+              _id: complaint.resident_id,
+              name: 'Unknown',
+              email: '',
+              mobile_number: '',
+              user_type: '',
+              address: '',
+              birthdate: '',
+              barangay_clearance: '',
+            },
+          };
+        }
+        return complaint;
+      })
+    );
+    this.complaints = complaintsWithResidents;
+  }
+  openViewModal(complaint: Complaint) {
+    this.selectedComplaint = complaint;
+    this.showViewModal = true;
+  }
+  closeViewModal() {
+    this.showViewModal = false;
+    this.selectedComplaint = null;
   }
 }

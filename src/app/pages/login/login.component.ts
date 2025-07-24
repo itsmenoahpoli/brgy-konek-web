@@ -76,6 +76,10 @@ export class LoginComponent {
           if (response.success) {
             this.authService.resetLoginAttempts(email);
             const userType = response.user?.role || '';
+            if (userType === 'admin') {
+              this.router.navigate(['/admin/home']);
+              return;
+            }
             this.requestOTPAndRedirect(email, userType);
           } else {
             this.authService.incrementLoginAttempts(email);

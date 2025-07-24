@@ -3,22 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DashboardLayoutComponent } from '../../../components/shared/dashboard-layout/dashboard-layout.component';
 import { NgIcon } from '@ng-icons/core';
-import { ComplaintsService } from '../../../services/complaints.service';
+import {
+  ComplaintsService,
+  Complaint,
+  Resident,
+} from '../../../services/complaints.service';
 import { AuthService } from '../../../services/auth.service';
 import { ConfirmDeleteModalComponent } from '../../../components/shared/confirm-delete-modal.component';
 import { StatusModalComponent } from '../../../components/shared/status-modal/status-modal.component';
-
-interface Complaint {
-  _id: string;
-  resident_id: string;
-  category: string;
-  date_of_report: string;
-  complaint_content: string;
-  attachments: string[];
-  status: string;
-  created_at: string;
-  updated_at: string;
-}
 
 @Component({
   selector: 'app-resident-complaints',

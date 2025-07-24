@@ -1,9 +1,20 @@
 import { Injectable } from '@angular/core';
 import apiClient from '../utils/api.util';
 
+export interface Resident {
+  _id: string;
+  name: string;
+  email: string;
+  mobile_number: string;
+  user_type: string;
+  address: string;
+  birthdate: string;
+  barangay_clearance: string;
+}
+
 export interface Complaint {
   _id: string;
-  resident_id: string;
+  resident_id: Resident;
   category: string;
   date_of_report: string;
   complaint_content: string;
@@ -63,6 +74,15 @@ export class ComplaintsService {
       return true;
     } catch (error) {
       return false;
+    }
+  }
+
+  async getResidentById(id: string): Promise<Resident | undefined> {
+    try {
+      const res = await apiClient.get<Resident>(`/residents/${id}`);
+      return res.data;
+    } catch (error) {
+      return undefined;
     }
   }
 }
