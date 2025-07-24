@@ -1,4 +1,21 @@
 <app-dashboard-layout title="Accounts" subtitle="View and manage user accounts">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex gap-2">
+      <input
+        type="text"
+        class="border rounded px-3 py-2 text-sm h-10 !w-80"
+        placeholder="Search by name, email, or mobile"
+        [(ngModel)]="searchTerm"
+      />
+    </div>
+    <button
+      type="button"
+      class="bg-blue-600 text-white px-4 py-2 h-10 rounded"
+      (click)="openCreateUserModal()"
+    >
+      Create User
+    </button>
+  </div>
   <div class="overflow-x-auto">
     <table class="min-w-full border-separate border-spacing-0 bg-transparent">
       <thead>
@@ -17,7 +34,7 @@
       </thead>
       <tbody>
         <ng-container *ngIf="users as users">
-          <tr *ngIf="users.length === 0">
+          <tr *ngIf="filteredUsers.length === 0">
             <td colspan="10" class="py-8 text-center text-gray-400">
               <svg
                 width="48"
@@ -43,7 +60,10 @@
               No data
             </td>
           </tr>
-          <tr *ngFor="let user of users" [hidden]="user._id === currentUserId">
+          <tr
+            *ngFor="let user of filteredUsers"
+            [hidden]="user._id === currentUserId"
+          >
             <td class="px-4 py-2">{{ user.name }}</td>
             <td class="px-4 py-2">{{ user.email }}</td>
             <td class="px-4 py-2">{{ user.mobile_number }}</td>
@@ -80,11 +100,4 @@
       </tbody>
     </table>
   </div>
-  <button
-    type="button"
-    class="mt-4 bg-green-600 text-white px-4 py-2 rounded"
-    (click)="openCreateUserModal()"
-  >
-    Create User
-  </button>
 </app-dashboard-layout>
