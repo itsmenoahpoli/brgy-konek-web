@@ -20,6 +20,9 @@ export type StatusModalType = 'success' | 'error' | 'info';
 export class StatusModalComponent implements OnInit, OnDestroy {
   @Input() set isVisible(value: boolean) {
     this._isVisible = value;
+    if (this._isVisible && this.type === 'success' && this.autoCloseDelay > 0) {
+      this.startAutoCloseTimer();
+    }
   }
   get isVisible(): boolean {
     return this._isVisible;

@@ -1,5 +1,8 @@
+import { Injectable } from '@angular/core';
+import apiClient from '../utils/api.util';
+
 export interface Announcement {
-  id: string;
+  _id: string;
   banner_image: string;
   title: string;
   header: string;
@@ -7,27 +10,50 @@ export interface Announcement {
   status: string;
 }
 
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
 @Injectable({ providedIn: 'root' })
 export class AnnouncementsService {
-  constructor(private http: HttpClient) {}
+  private baseUrl = '/announcements';
 
-  getAnnouncements(): Observable<Announcement[]> {
-    return this.http.get<Announcement[]>('/announcements');
+  async getAnnouncements(): Promise<Announcement[] | undefined> {
+    try {
+      const res = await apiClient.get<Announcement[]>(this.baseUrl);
+      return res.data;
+    } catch (error) {
+      return undefined;
+    }
   }
 
-  addAnnouncement(announcement: Announcement): Observable<any> {
-    return this.http.post('/announcements', announcement);
+  async addAnnouncement(announcement: Announcement): Promise<any> {
+    try {
+      const res = await apiClient.post(this.baseUrl, {
+        posted_by: 'admin',
+        title_slug: announcement.title.toLowerCase().replace(/ /g, '-'),
+        ...announcement,
+      });
+      return res.data;
+    } catch (error) {
+      return undefined;
+    }
   }
 
-  updateAnnouncement(id: string, announcement: Announcement): Observable<any> {
-    return this.http.put(`/announcements/${id}`, announcement);
+  async updateAnnouncement(
+    _id: string,
+    announcement: Announcement
+  ): Promise<any> {
+    try {
+      const res = await apiClient.put(`${this.baseUrl}/${_id}`, announcement);
+      return res.data;
+    } catch (error) {
+      return undefined;
+    }
   }
 
-  deleteAnnouncement(id: string): Observable<any> {
-    return this.http.delete(`/announcements/${id}`);
+  async deleteAnnouncement(_id: string): Promise<any> {
+    try {
+      const res = await apiClient.delete(`${this.baseUrl}/${_id}`);
+      return res;
+    } catch (error) {
+      return undefined;
+    }
   }
 }

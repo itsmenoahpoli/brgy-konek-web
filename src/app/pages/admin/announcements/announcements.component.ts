@@ -5,14 +5,15 @@ import {
   ReactiveFormsModule,
   FormsModule,
 } from '@angular/forms';
-import { v4 as uuidv4 } from 'uuid';
 import {
   AnnouncementsService,
   Announcement,
 } from '../../../services/announcements.service';
 import { DashboardLayoutComponent } from '../../../components/shared/dashboard-layout/dashboard-layout.component';
 import { TitleCasePipe } from '@angular/common';
-import { Observable } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { StatusModalComponent } from '../../../components/shared/status-modal/status-modal.component';
+import { ConfirmDeleteModalComponent } from '../../../components/shared/confirm-delete-modal.component';
 
 @Component({
   selector: 'app-announcements',
@@ -22,6 +23,9 @@ import { Observable } from 'rxjs';
     ReactiveFormsModule,
     TitleCasePipe,
     FormsModule,
+    CommonModule,
+    StatusModalComponent,
+    ConfirmDeleteModalComponent,
   ],
   templateUrl: './announcements.component.html',
   styleUrl: './announcements.component.scss',
@@ -33,6 +37,12 @@ export class AnnouncementsComponent {
   showModal = false;
   search = '';
   statusFilter = '';
+  bannerImagePreview: string | null = null;
+  statusModalVisible = false;
+  statusModalTitle = '';
+  statusModalMessage = '';
+  confirmDeleteVisible = false;
+  deleteId: string | null = null;
   constructor(
     private announcementsService: AnnouncementsService,
     private fb: FormBuilder
@@ -57,15 +67,14 @@ export class AnnouncementsComponent {
       return matchesTitle && matchesStatus;
     });
   }
-  loadAnnouncements() {
-    this.announcementsService.getAnnouncements().subscribe((data) => {
-      this.announcements = data;
-    });
+  async loadAnnouncements() {
+    const data = await this.announcementsService.getAnnouncements();
+    this.announcements = data || [];
   }
   openModal(editAnnouncement?: Announcement) {
     if (editAnnouncement) {
       this.form.patchValue(editAnnouncement);
-      this.editId = editAnnouncement.id;
+      this.editId = editAnnouncement._id;
     } else {
       this.form.reset();
       this.editId = null;
@@ -77,40 +86,56 @@ export class AnnouncementsComponent {
     this.form.reset();
     this.editId = null;
   }
-  submit() {
+  async submit() {
     if (this.form.invalid) return;
     if (this.editId) {
-      this.announcementsService
-        .updateAnnouncement(this.editId, {
-          id: this.editId,
-          ...this.form.value,
-        })
-        .subscribe(() => {
-          this.editId = null;
-          this.form.reset();
-          this.loadAnnouncements();
-          this.showModal = false;
-        });
+      await this.announcementsService.updateAnnouncement(this.editId, {
+        ...this.form.value,
+      });
+      this.editId = null;
+      this.form.reset();
+      await this.loadAnnouncements();
+      this.showModal = false;
+      this.statusModalTitle = 'Announcement Updated';
+      this.statusModalMessage = 'The announcement was updated successfully.';
+      this.statusModalVisible = true;
     } else {
-      this.announcementsService
-        .addAnnouncement({
-          id: uuidv4(),
-          ...this.form.value,
-        })
-        .subscribe(() => {
-          this.form.reset();
-          this.loadAnnouncements();
-          this.showModal = false;
-        });
+      await this.announcementsService.addAnnouncement({
+        ...this.form.value,
+      });
+      this.form.reset();
+      await this.loadAnnouncements();
+      this.showModal = false;
+      this.statusModalTitle = 'Announcement Created';
+      this.statusModalMessage = 'The announcement was created successfully.';
+      this.statusModalVisible = true;
     }
   }
   edit(announcement: Announcement) {
     this.openModal(announcement);
   }
-  delete(id: string) {
-    this.announcementsService.deleteAnnouncement(id).subscribe(() => {
-      this.loadAnnouncements();
-    });
+  async delete(id: string) {
+    this.deleteId = id;
+    this.confirmDeleteVisible = true;
+  }
+  async onConfirmDelete() {
+    if (this.deleteId) {
+      const res = await this.announcementsService.deleteAnnouncement(
+        this.deleteId
+      );
+      if (res && res.status === 204) {
+        this.statusModalTitle = 'Deleted';
+        this.statusModalMessage = 'Successfully deleted announcement.';
+        this.statusModalVisible = true;
+      }
+      await this.loadAnnouncements();
+      this.deleteId = null;
+      this.confirmDeleteVisible = false;
+    }
+  }
+  onCancelDelete() {
+    this.confirmDeleteVisible = false;
+    this.deleteId = null;
   }
   cancelEdit() {
     this.closeModal();
@@ -120,5 +145,20 @@ export class AnnouncementsComponent {
   }
   onStatusFilterChange(value: string) {
     this.statusFilter = value;
+  }
+  onBannerImageChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.bannerImagePreview = reader.result as string;
+        this.form.patchValue({ banner_image: this.bannerImagePreview });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+  onStatusModalClosed() {
+    this.statusModalVisible = false;
   }
 }
