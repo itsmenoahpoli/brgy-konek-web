@@ -2,5 +2,149 @@
   title="Announcements"
   subtitle="View and manage all announcements"
 >
-  <p>announcements works!</p>
+  <div
+    class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4"
+  >
+    <div class="flex gap-2 items-center w-full md:w-auto">
+      <input
+        type="text"
+        placeholder="Search title..."
+        class="border rounded px-3 py-2 w-full md:w-64"
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange($event)"
+      />
+      <select
+        class="border rounded px-3 py-2"
+        [(ngModel)]="statusFilter"
+        (ngModelChange)="onStatusFilterChange($event)"
+      >
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+    <button
+      (click)="openModal()"
+      class="bg-blue-600 text-white px-4 py-2 rounded w-full md:w-auto"
+    >
+      Create Announcement
+    </button>
+  </div>
+  <div
+    *ngIf="filteredAnnouncements.length === 0"
+    class="flex flex-col items-center justify-center h-96"
+  >
+    <svg
+      class="w-16 h-16 text-gray-400 mb-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M13 16h-1v-4h-1m1-4h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8 9 3.582 9 8z"
+      />
+    </svg>
+    <div class="text-gray-500 text-lg">No announcements found</div>
+  </div>
+  <div
+    *ngIf="filteredAnnouncements.length > 0"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+  >
+    <div
+      *ngFor="let a of filteredAnnouncements"
+      class="bg-white rounded-lg shadow overflow-hidden flex flex-col"
+    >
+      <img
+        [src]="a.banner_image"
+        alt="Banner"
+        class="h-40 w-full object-cover"
+        *ngIf="a.banner_image"
+      />
+      <div class="p-4 flex-1 flex flex-col">
+        <div class="text-gray-500 text-sm mb-1">{{ a.status | titlecase }}</div>
+        <div class="font-bold text-lg mb-1">{{ a.title }}</div>
+        <div class="font-semibold text-md mb-2">{{ a.header }}</div>
+        <div class="text-gray-700 mb-4 flex-1">{{ a.body }}</div>
+        <div class="flex gap-2 mt-auto">
+          <button (click)="edit(a)" class="text-blue-600">Edit</button>
+          <button (click)="delete(a.id)" class="text-red-600">Delete</button>
+        </div>
+        <a href="#" class="text-blue-700 mt-2 inline-block">Read More →</a>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="showModal"
+    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+  >
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-8 relative">
+      <button
+        (click)="closeModal()"
+        class="absolute top-2 right-2 text-gray-500 text-2xl"
+      >
+        &times;
+      </button>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+        <div>
+          <label class="block font-medium">Banner Image URL</label>
+          <input
+            formControlName="banner_image"
+            type="text"
+            class="w-full border rounded px-3 py-2"
+          />
+        </div>
+        <div>
+          <label class="block font-medium">Title</label>
+          <input
+            formControlName="title"
+            type="text"
+            class="w-full border rounded px-3 py-2"
+          />
+        </div>
+        <div>
+          <label class="block font-medium">Header</label>
+          <input
+            formControlName="header"
+            type="text"
+            class="w-full border rounded px-3 py-2"
+          />
+        </div>
+        <div>
+          <label class="block font-medium">Body</label>
+          <textarea
+            formControlName="body"
+            class="w-full border rounded px-3 py-2"
+          ></textarea>
+        </div>
+        <div>
+          <label class="block font-medium">Status</label>
+          <select
+            formControlName="status"
+            class="w-full border rounded px-3 py-2"
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="flex gap-2">
+          <button
+            type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            {{ editId ? "Update" : "Create" }}
+          </button>
+          <button
+            type="button"
+            (click)="closeModal()"
+            class="bg-gray-400 text-white px-4 py-2 rounded"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </app-dashboard-layout>
