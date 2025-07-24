@@ -8,6 +8,8 @@ export interface Announcement {
   header: string;
   body: string;
   status: string;
+  created_at: string;
+  updated_at?: string;
 }
 
 @Injectable({ providedIn: 'root' })

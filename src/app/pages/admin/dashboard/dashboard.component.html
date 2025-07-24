@@ -36,7 +36,9 @@
         Total Complaints
       </div>
       <div class="flex items-center justify-end mt-auto z-10">
-        <div class="text-4xl font-bold ml-4">30</div>
+        <div class="text-4xl font-bold ml-4">
+          {{ statistics?.totalComplaints ?? "-" }}
+        </div>
       </div>
     </div>
     <div
@@ -72,7 +74,9 @@
         Active Announcements
       </div>
       <div class="flex items-center justify-end mt-auto z-10">
-        <div class="text-4xl font-bold ml-4">6</div>
+        <div class="text-4xl font-bold ml-4">
+          {{ statistics?.totalActiveAnnouncements ?? "-" }}
+        </div>
       </div>
     </div>
     <div
@@ -100,7 +104,9 @@
         Registered Users
       </div>
       <div class="flex items-center justify-end mt-auto z-10">
-        <div class="text-4xl font-bold ml-4">2</div>
+        <div class="text-4xl font-bold ml-4">
+          {{ statistics?.totalResidents ?? "-" }}
+        </div>
       </div>
     </div>
     <div
@@ -136,8 +142,109 @@
         Resolved Complaints
       </div>
       <div class="flex items-center justify-end mt-auto z-10">
-        <div class="text-4xl font-bold ml-4">12</div>
+        <div class="text-4xl font-bold ml-4">{{ resolvedComplaints }}</div>
       </div>
+    </div>
+  </div>
+  <div class="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="bg-white rounded-xl shadow border p-6 flex flex-col">
+      <div class="font-semibold text-lg mb-2">Complaint Volume</div>
+      <canvas
+        baseChart
+        [data]="complaintsLineChartData"
+        [options]="complaintsLineChartOptions"
+        [type]="'line'"
+        height="220"
+      ></canvas>
+    </div>
+    <div class="bg-white rounded-xl shadow border p-6 flex flex-col">
+      <div class="font-semibold text-lg mb-2">Announcement Activity</div>
+      <canvas
+        baseChart
+        [data]="announcementsBarChartData"
+        [options]="announcementsBarChartOptions"
+        [type]="'bar'"
+        height="220"
+      ></canvas>
+    </div>
+    <div class="bg-white rounded-xl shadow border p-6 flex flex-col">
+      <div class="font-semibold text-lg mb-2">User Activity</div>
+      <canvas
+        baseChart
+        [data]="usersAreaChartData"
+        [options]="usersAreaChartOptions"
+        [type]="'line'"
+        height="220"
+      ></canvas>
+    </div>
+  </div>
+
+  <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+    <div class="bg-white rounded-xl shadow border p-6 flex flex-col">
+      <div class="font-semibold text-lg mb-2">Recent Complaints</div>
+      <div *ngIf="recentComplaints.length === 0">No recent complaints</div>
+      <table *ngIf="recentComplaints.length > 0" class="min-w-full text-sm">
+        <thead>
+          <tr>
+            <th class="text-left px-2 py-1">Date</th>
+            <th class="text-left px-2 py-1">Complainant</th>
+            <th class="text-left px-2 py-1">Category</th>
+            <th class="text-left px-2 py-1">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let complaint of recentComplaints">
+            <td class="px-2 py-1">
+              {{ complaint.created_at | date : "short" }}
+            </td>
+            <td class="px-2 py-1">{{ complaint.resident_id?.name }}</td>
+            <td class="px-2 py-1">{{ complaint.category }}</td>
+            <td class="px-2 py-1">
+              <span
+                [ngClass]="{
+                  'bg-yellow-100 text-yellow-800 border-yellow-300':
+                    complaint.status === 'draft',
+                  'bg-green-100 text-green-800 border-green-300':
+                    complaint.status === 'published'
+                }"
+                class="px-2 py-1 rounded-full border text-xs font-semibold capitalize"
+              >
+                {{ complaint.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="bg-white rounded-xl shadow border p-6 flex flex-col">
+      <div class="font-semibold text-lg mb-2">Recent Announcements</div>
+      <div *ngIf="recentAnnouncements.length === 0">
+        No recent announcements
+      </div>
+      <table *ngIf="recentAnnouncements.length > 0" class="min-w-full text-sm">
+        <thead>
+          <tr>
+            <th class="text-left px-2 py-1">Date</th>
+            <th class="text-left px-2 py-1">Title</th>
+            <th class="text-left px-2 py-1">Category</th>
+            <th class="text-left px-2 py-1">Creator</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let announcement of recentAnnouncements">
+            <td class="px-2 py-1">{{ getAnnouncementDate(announcement) }}</td>
+            <td class="px-2 py-1">{{ announcement.title }}</td>
+            <td class="px-2 py-1">{{ announcement.header }}</td>
+            <td class="px-2 py-1">
+              <span
+                class="bg-blue-100 text-blue-800 border-blue-300 px-2 py-1 rounded-full border text-xs font-semibold capitalize"
+              >
+                admin
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </app-dashboard-layout>
