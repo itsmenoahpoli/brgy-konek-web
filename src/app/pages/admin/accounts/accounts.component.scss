@@ -1,0 +1,22 @@
+table {
+  background: transparent;
+  border: none;
+}
+th,
+td {
+  border: none;
+  background: transparent;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
+thead th {
+  font-weight: 500;
+  color: #334155;
+  background: #f8fafc;
+}
+tbody tr {
+  transition: background 0.2s;
+}
+tbody tr:hover {
+  background: #f1f5f9;
+}

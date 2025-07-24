@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from } from 'rxjs';
-import apiClient from '../utils/api.util';
+import apiClient, { encrypt } from '../utils/api.util';
 
 export interface User {
   id: string;
@@ -56,7 +56,9 @@ export class AuthService {
         .post<ApiUser>('/auth/login', { email, password })
         .then((response) => {
           const data = response.data;
-          console.log(data);
+          if (data && data.token) {
+            localStorage.setItem('accessToken', encrypt(data.token));
+          }
           if (data && data.user && data.user.id) {
             const user: User = {
               id: data.user.id,
