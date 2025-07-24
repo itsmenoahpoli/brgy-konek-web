@@ -5,6 +5,7 @@ import { DashboardLayoutComponent } from '../../../components/shared/dashboard-l
 import { AuthService } from '../../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { StatusModalComponent } from '../../../components/shared/status-modal/status-modal.component';
+import { ConfirmDeleteModalComponent } from '../../../components/shared/confirm-delete-modal.component';
 
 @Component({
   selector: 'app-accounts',
@@ -15,6 +16,7 @@ import { StatusModalComponent } from '../../../components/shared/status-modal/st
     DatePipe,
     FormsModule,
     StatusModalComponent,
+    ConfirmDeleteModalComponent,
   ],
   templateUrl: './accounts.component.html',
   styleUrls: ['./accounts.component.scss'],
@@ -43,6 +45,8 @@ export class AccountsComponent implements OnInit {
   statusModalType: 'success' | 'error' | 'info' = 'success';
   statusModalTitle = '';
   statusModalMessage = '';
+  isDeleteModalVisible = false;
+  userToDelete: User | null = null;
 
   constructor(
     private usersService: UsersService,
@@ -64,7 +68,9 @@ export class AccountsComponent implements OnInit {
     );
   }
   editUser(user: User) {}
-  deleteUser(user: User) {}
+  deleteUser(user: User) {
+    this.openDeleteModal(user);
+  }
   openCreateUserModal() {
     this.isCreateUserModalVisible = true;
     this.createUserForm = {
@@ -211,6 +217,39 @@ export class AccountsComponent implements OnInit {
       }
     } catch (e) {
       this.createUserError = 'Failed to create user.';
+    }
+    this.isSubmitting = false;
+  }
+
+  openDeleteModal(user: User) {
+    this.userToDelete = user;
+    this.isDeleteModalVisible = true;
+  }
+
+  closeDeleteModal() {
+    this.isDeleteModalVisible = false;
+    this.userToDelete = null;
+  }
+
+  async confirmDeleteUser() {
+    if (!this.userToDelete) return;
+    const id = this.userToDelete._id;
+    this.isSubmitting = true;
+    try {
+      const res = await this.usersService.deleteUser(id!);
+      if (res === true) {
+        this.users = this.users.filter((u) => u._id !== id);
+        this.closeDeleteModal();
+        this.statusModalType = 'success';
+        this.statusModalTitle = 'User Deleted';
+        this.statusModalMessage = 'The user account was successfully deleted.';
+        this.showStatusModal = true;
+        setTimeout(() => this.closeStatusModal(), 2000);
+      } else {
+        this.createUserError = 'Failed to delete user.';
+      }
+    } catch (e) {
+      this.createUserError = 'Failed to delete user.';
     }
     this.isSubmitting = false;
   }
