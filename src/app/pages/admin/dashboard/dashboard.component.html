@@ -2,7 +2,142 @@
   title="Dashboard"
   subtitle="Overview of admin activities and statistics"
 >
-  <ng-container>
-    <p>dashboard works!</p>
-  </ng-container>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+    <div
+      class="bg-white rounded-xl shadow p-6 flex flex-col relative overflow-hidden min-h-[140px]"
+    >
+      <div
+        class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/4 opacity-20 pointer-events-none select-none"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-36 h-36 text-red-400"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 6v6l4 2"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            stroke="currentColor"
+            stroke-width="1.5"
+            fill="none"
+          />
+        </svg>
+      </div>
+      <div class="text-lg font-semibold mb-4 text-left z-10">
+        Total Complaints
+      </div>
+      <div class="flex items-center justify-end mt-auto z-10">
+        <div class="text-4xl font-bold ml-4">30</div>
+      </div>
+    </div>
+    <div
+      class="bg-white rounded-xl shadow p-6 flex flex-col relative overflow-hidden min-h-[140px]"
+    >
+      <div
+        class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/4 opacity-20 pointer-events-none select-none"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-36 h-36 text-yellow-400"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 4.5v15m7.5-7.5h-15"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            stroke="currentColor"
+            stroke-width="1.5"
+            fill="none"
+          />
+        </svg>
+      </div>
+      <div class="text-lg font-semibold mb-4 text-left z-10">
+        Active Announcements
+      </div>
+      <div class="flex items-center justify-end mt-auto z-10">
+        <div class="text-4xl font-bold ml-4">6</div>
+      </div>
+    </div>
+    <div
+      class="bg-white rounded-xl shadow p-6 flex flex-col relative overflow-hidden min-h-[140px]"
+    >
+      <div
+        class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/4 opacity-20 pointer-events-none select-none"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-36 h-36 text-blue-400"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m0-4a4 4 0 118 0 4 4 0 01-8 0z"
+          />
+        </svg>
+      </div>
+      <div class="text-lg font-semibold mb-4 text-left z-10">
+        Registered Users
+      </div>
+      <div class="flex items-center justify-end mt-auto z-10">
+        <div class="text-4xl font-bold ml-4">2</div>
+      </div>
+    </div>
+    <div
+      class="bg-white rounded-xl shadow p-6 flex flex-col relative overflow-hidden min-h-[140px]"
+    >
+      <div
+        class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/4 opacity-20 pointer-events-none select-none"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-36 h-36 text-green-400"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M5 13l4 4L19 7"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            stroke="currentColor"
+            stroke-width="1.5"
+            fill="none"
+          />
+        </svg>
+      </div>
+      <div class="text-lg font-semibold mb-4 text-left z-10">
+        Resolved Complaints
+      </div>
+      <div class="flex items-center justify-end mt-auto z-10">
+        <div class="text-4xl font-bold ml-4">12</div>
+      </div>
+    </div>
+  </div>
 </app-dashboard-layout>
