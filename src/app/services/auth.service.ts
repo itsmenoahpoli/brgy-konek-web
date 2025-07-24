@@ -16,16 +16,17 @@ export interface User {
 }
 
 interface ApiUser {
-  id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  mobile_number?: string;
-  address?: string;
-  barangay?: string;
-  city?: string;
-  province?: string;
-  user_type?: string;
+  message?: string;
+  token?: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    mobile_number?: string;
+    user_type?: string;
+    address?: string;
+    birthdate?: string;
+  };
 }
 
 @Injectable({
@@ -55,30 +56,31 @@ export class AuthService {
         .post<ApiUser>('/auth/login', { email, password })
         .then((response) => {
           const data = response.data;
-          if (data && data.id) {
+          console.log(data);
+          if (data && data.user && data.user.id) {
             const user: User = {
-              id: data.id,
-              email: data.email,
-              firstName: data.first_name,
-              lastName: data.last_name,
-              phone: data.mobile_number,
-              address: data.address,
-              barangay: data.barangay,
-              city: data.city,
-              province: data.province,
-              role: data.user_type,
+              id: data.user.id,
+              email: data.user.email,
+              firstName: data.user.name,
+              lastName: '',
+              phone: data.user.mobile_number,
+              address: data.user.address,
+              barangay: '',
+              city: '',
+              province: '',
+              role: data.user.user_type,
             };
             localStorage.setItem('currentUser', JSON.stringify(user));
             this.currentUserSubject.next(user);
             return {
               success: true,
-              message: response.data.message || 'Login successful',
+              message: data.message || 'Login successful',
               user,
             };
           } else {
             return {
               success: false,
-              message: response.data?.message || 'Invalid email or password',
+              message: data?.message || 'Invalid email or password',
             };
           }
         })
@@ -115,30 +117,30 @@ export class AuthService {
           response = await apiClient.post<ApiUser>('/auth/register', userData);
         }
         const data = response.data;
-        if (data && (data.id || response.status === 201)) {
+        if (data && data.user && (data.user.id || response.status === 201)) {
           const user: User = {
-            id: data.id,
-            email: data.email,
-            firstName: data.first_name,
-            lastName: data.last_name,
-            phone: data.mobile_number,
-            address: data.address,
-            barangay: data.barangay,
-            city: data.city,
-            province: data.province,
-            role: data.user_type,
+            id: data.user.id,
+            email: data.user.email,
+            firstName: data.user.name,
+            lastName: '',
+            phone: data.user.mobile_number,
+            address: data.user.address,
+            barangay: '',
+            city: '',
+            province: '',
+            role: data.user.user_type,
           };
           localStorage.setItem('currentUser', JSON.stringify(user));
           this.currentUserSubject.next(user);
           return {
             success: true,
-            message: response.data.message || 'Registration successful',
+            message: data.message || 'Registration successful',
             user,
           };
         } else {
           return {
             success: false,
-            message: response.data?.message || 'Registration failed',
+            message: data?.message || 'Registration failed',
           };
         }
       })().catch((error) => {
@@ -246,7 +248,7 @@ export class AuthService {
   ): Observable<{ success: boolean; message: string }> {
     return from(
       apiClient
-        .post('/auth/verify-otp', { email, otp })
+        .post('/auth/verify-otp', { email, otp_code: otp })
         .then((response) => {
           const data = response.data;
           return {

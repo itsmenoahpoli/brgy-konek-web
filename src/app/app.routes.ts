@@ -35,13 +35,7 @@ export const routes: Routes = [
         (m) => m.ProfileComponent
       ),
   },
-  {
-    path: 'home',
-    loadComponent: () =>
-      import('./pages/resident/home/home.component').then(
-        (m) => m.HomeComponent
-      ),
-  },
+
   {
     path: 'verify-otp',
     loadComponent: () =>
@@ -75,6 +69,34 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/admin/complaints/complaints.component').then(
         (m) => m.ComplaintsComponent
+      ),
+  },
+  {
+    path: 'resident/home',
+    loadComponent: () =>
+      import('./pages/resident/home/home.component').then(
+        (m) => m.HomeComponent
+      ),
+  },
+  {
+    path: 'resident/announcements',
+    loadComponent: () =>
+      import('./pages/resident/announcements/announcements.component').then(
+        (m) => m.AnnouncementsComponent
+      ),
+  },
+  {
+    path: 'resident/complaints',
+    loadComponent: () =>
+      import('./pages/resident/complaints/complaints.component').then(
+        (m) => m.ComplaintsComponent
+      ),
+  },
+  {
+    path: 'resident/list-of-reports',
+    loadComponent: () =>
+      import('./pages/resident/list-of-reports/list-of-reports.component').then(
+        (m) => m.ListOfReportsComponent
       ),
   },
 ];

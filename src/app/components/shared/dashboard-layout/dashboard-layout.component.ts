@@ -32,9 +32,26 @@ export class DashboardLayoutComponent {
     const user = this.authService.getCurrentUser();
     if (user?.role === 'resident') {
       this.sidebarLinks = [
-        { label: 'Complaints', icon: 'heroHome', route: '/complaints' },
-        { label: 'Announcements', icon: 'heroUser', route: '/announcements' },
-        { label: 'List of Reports', icon: 'heroCog', route: '/reports' },
+        {
+          label: 'Dashboard',
+          icon: 'heroHome',
+          route: 'resident/home',
+        },
+        {
+          label: 'Complaints',
+          icon: 'heroCog',
+          route: 'resident/complaints',
+        },
+        {
+          label: 'Announcements',
+          icon: 'heroUser',
+          route: 'resident/announcements',
+        },
+        {
+          label: 'List of Reports',
+          icon: 'heroCog',
+          route: 'resident/list-of-reports',
+        },
       ];
     } else if (user?.role === 'admin' || user?.role === 'staff') {
       this.sidebarLinks = [

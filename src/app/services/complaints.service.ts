@@ -25,4 +25,44 @@ export class ComplaintsService {
       return undefined;
     }
   }
+
+  async getComplaintsByResidentId(
+    authService: any
+  ): Promise<Complaint[] | undefined> {
+    const currentUser = authService.getCurrentUser();
+    if (!currentUser || !currentUser.id) return undefined;
+    try {
+      const res = await apiClient.get<Complaint[]>(
+        `/complaints/resident/${currentUser.id}`
+      );
+      return res.data;
+    } catch (error) {
+      return undefined;
+    }
+  }
+
+  async createComplaint(payload: {
+    resident_id: string;
+    category: string;
+    date_of_report: string;
+    complaint_content: string;
+    attachments: string[];
+    status: string;
+  }): Promise<Complaint | undefined> {
+    try {
+      const res = await apiClient.post<Complaint>(this.baseUrl, payload);
+      return res.data;
+    } catch (error) {
+      return undefined;
+    }
+  }
+
+  async deleteComplaint(id: string): Promise<boolean> {
+    try {
+      await apiClient.delete(`/complaints/${id}`);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 }

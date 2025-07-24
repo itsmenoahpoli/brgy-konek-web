@@ -71,6 +71,7 @@ export class LoginComponent {
 
       this.authService.login(email, password).subscribe({
         next: (response) => {
+          console.log(response);
           this.isLoading = false;
           if (response.success) {
             this.authService.resetLoginAttempts(email);
@@ -143,17 +144,13 @@ export class LoginComponent {
   }
 
   private requestOTPAndRedirect(email: string, userType: string): void {
-    console.log('Requesting OTP for email:', email);
     this.showOtpLoadingModal = true;
     this.authService.sendOTP(email).subscribe({
       next: (otpResponse) => {
-        console.log('OTP response:', otpResponse);
         this.showOtpLoadingModal = false;
         if (otpResponse.success) {
-          console.log('OTP sent successfully, showing success modal');
           this.showOtpSuccessModal = true;
           setTimeout(() => {
-            console.log('Auto redirecting to verify-otp after 2 seconds');
             this.showOtpSuccessModal = false;
             this.router.navigate(['/verify-otp'], {
               queryParams: { email, user_type: userType },
@@ -164,7 +161,6 @@ export class LoginComponent {
         }
       },
       error: (error) => {
-        console.log('OTP request error:', error);
         this.showOtpLoadingModal = false;
         this.errorMessage = 'Failed to send OTP. Please try again.';
       },

@@ -3,3 +3,17 @@
 @tailwind utilities;
 
 /* You can add global styles to this file, and also import other style files */
+table tr {
+  background-color: #fff;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  height: 64px;
+  min-height: 64px;
+}
+table td,
+table th {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+}

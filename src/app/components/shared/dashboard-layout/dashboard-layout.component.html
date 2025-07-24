@@ -1,6 +1,6 @@
-<div class="dashboard-layout flex min-h-screen">
+<div class="dashboard-layout min-h-screen flex">
   <div
-    class="sidebar bg-cover bg-center text-white transition-all duration-300 relative"
+    class="sidebar bg-cover bg-center text-white transition-all duration-300 fixed top-0 left-0 h-screen z-30"
     [ngClass]="{ 'w-64': sidebarOpen, 'w-16': !sidebarOpen }"
     style="background-image: url('assets/images/splash-bg.png')"
   >
@@ -36,9 +36,17 @@
       </li>
     </ul>
   </div>
-  <div class="flex-1 flex flex-col">
+  <div
+    class="flex-1 flex flex-col ml-64"
+    [ngClass]="{ 'ml-64': sidebarOpen, 'ml-16': !sidebarOpen }"
+  >
     <nav
-      class="navbar bg-white shadow h-16 flex items-center px-6 justify-between flex-wrap"
+      class="navbar bg-white shadow h-16 flex items-center px-6 justify-between fixed top-0 right-0 z-20 w-[calc(100%-16rem)]"
+      [ngClass]="{
+        'w-[calc(100%-16rem)]': sidebarOpen,
+        'w-[calc(100%-4rem)]': !sidebarOpen
+      }"
+      style="left: auto"
     >
       <span class="font-semibold text-gray-700">Navbar</span>
       <app-user-avatar-dropdown
@@ -46,7 +54,10 @@
         (logout)="logout()"
       ></app-user-avatar-dropdown>
     </nav>
-    <main class="flex-1 p-6 bg-gradient-to-br from-blue-50 to-indigo-100">
+    <main
+      class="flex-1 p-6 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-y-auto mt-16"
+      style="height: calc(100vh - 4rem)"
+    >
       <nav
         *ngIf="breadcrumbs.length"
         class="mb-4 flex items-center text-sm text-gray-600 space-x-2"
