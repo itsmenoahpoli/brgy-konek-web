@@ -197,7 +197,7 @@
             <td class="px-2 py-1">
               {{ complaint.created_at | date : "short" }}
             </td>
-            <td class="px-2 py-1">{{ complaint.resident_id?.name }}</td>
+            <td class="px-2 py-1">{{ complaint.resident_id.name }}</td>
             <td class="px-2 py-1">{{ complaint.category }}</td>
             <td class="px-2 py-1">
               <span

@@ -1,0 +1,505 @@
+<app-landing-layout>
+  <div
+    class="h-screen w-full splash-bg flex flex-col justify-center items-start pl-16 px-4 pt-32 sm:pl-16 sm:pt-0 sm:items-start items-center text-center sm:text-left"
+  >
+    <h1
+      class="text-4xl sm:text-7xl font-bold leading-tight mb-4 underline decoration-4"
+    >
+      Serving Our Community<br />Together
+    </h1>
+    <p
+      class="text-base sm:text-xl font-medium mb-8 underline decoration-2 max-w-xs sm:max-w-xl"
+    >
+      Welcome to Barangay Masaguisi's official portal. Stay informed, connected,
+      and engaged with your community through our digital services.
+    </p>
+    <div class="flex flex-col gap-4 w-full max-w-xs">
+      <button
+        class="flex items-center gap-3 bg-blue-600 text-white font-bold px-4 sm:px-8 rounded-lg text-base sm:text-lg w-full h-14 sm:h-16"
+        (click)="navigateToLogin()"
+      >
+        <span class="flex-shrink-0 flex items-center justify-center h-6 w-6">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="h-6 w-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M16.5 12v.75m0 0v.75m0-.75h.008v.008H16.5V12zm0 0h.008v.008H16.5V12zm-2.25 0a6.75 6.75 0 01-6.75 6.75v-13.5A6.75 6.75 0 0114.25 12zm0 0h2.25a2.25 2.25 0 002.25-2.25V9.75A2.25 2.25 0 0016.5 7.5h-2.25"
+            />
+          </svg>
+        </span>
+        <span class="truncate">View Announcement</span>
+      </button>
+      <button
+        class="flex items-center gap-3 bg-white text-blue-700 font-bold px-4 sm:px-8 rounded-lg text-base sm:text-lg border border-blue-200 w-full h-14 sm:h-16"
+        (click)="navigateToRegister()"
+      >
+        <span class="flex-shrink-0 flex items-center justify-center h-6 w-6">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="h-6 w-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v2.25m0 4.5h.008v.008H12v-.008zm0 0h.008v.008H12v-.008zm0 0a6.75 6.75 0 100-13.5 6.75 6.75 0 000 13.5zm0 0h.008v.008H12v-.008zm0 0h.008v.008H12v-.008z"
+            />
+          </svg>
+        </span>
+        <span class="truncate">File Complaint</span>
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="h-screen w-full bg-gray-50 flex flex-col items-center pt-16"
+    id="announcements"
+  >
+    <div class="w-full max-w-7xl px-4">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">Recent Announcements</h2>
+        <a
+          (click)="navigateToAnnouncements()"
+          class="text-blue-700 font-medium flex items-center gap-1 hover:underline"
+          >View All <span class="ml-1">&rarr;</span></a
+        >
+      </div>
+      <div *ngIf="loading" class="flex justify-center items-center h-64 w-full">
+        <span class="text-gray-500 text-lg">Loading...</span>
+      </div>
+      <div
+        *ngIf="!loading && announcements.length === 0"
+        class="flex justify-center items-center h-64 w-full"
+      >
+        <span class="text-gray-500 text-lg">No announcements found.</span>
+      </div>
+      <div
+        *ngIf="!loading && announcements.length > 0"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+      >
+        <div
+          *ngFor="let a of announcements"
+          class="bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-200 overflow-hidden flex flex-col"
+        >
+          <img
+            *ngIf="a.banner_image"
+            [src]="a.banner_image"
+            alt="Banner"
+            class="h-48 w-full object-cover"
+          />
+          <div class="p-6 flex-1 flex flex-col">
+            <div class="flex items-center text-gray-500 text-sm mb-2">
+              <svg
+                class="w-4 h-4 mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              {{ a.created_at | date : "MMMM d, yyyy" }}
+            </div>
+            <div class="font-bold text-lg mb-1 text-gray-900">
+              {{ a.title }}
+            </div>
+            <div class="text-gray-700 text-sm mb-2">{{ a.body }}</div>
+            <a
+              routerLink="/announcements"
+              class="mt-4 text-blue-700 font-medium flex items-center gap-1 hover:underline"
+              >Read More <span class="ml-1">&rarr;</span></a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="h-full w-full bg-gray-50 flex flex-col items-center py-16"
+    id="services"
+  >
+    <h2 class="text-3xl font-bold text-gray-900 mb-10">Our Services</h2>
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-7xl px-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow flex flex-col items-center p-8 text-center"
+      >
+        <span
+          class="mb-4 flex items-center justify-center h-14 w-14 rounded-full bg-blue-100"
+        >
+          <svg
+            class="h-8 w-8 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M16.5 3.75v16.5m-9-16.5v16.5M3.75 7.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"
+            />
+          </svg>
+        </span>
+        <div class="font-bold text-lg text-gray-900 mb-1">
+          Certificate Issuance
+        </div>
+        <div class="text-gray-600 text-sm">
+          Barangay clearance, residency, and other official certificates
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-2xl shadow flex flex-col items-center p-8 text-center"
+      >
+        <span
+          class="mb-4 flex items-center justify-center h-14 w-14 rounded-full bg-blue-100"
+        >
+          <svg
+            class="h-8 w-8 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 6v6l4 2"
+            />
+            <circle cx="12" cy="12" r="9" />
+          </svg>
+        </span>
+        <div class="font-bold text-lg text-gray-900 mb-1">
+          Dispute Resolution
+        </div>
+        <div class="text-gray-600 text-sm">
+          Mediation services for community conflicts and disputes
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-2xl shadow flex flex-col items-center p-8 text-center"
+      >
+        <span
+          class="mb-4 flex items-center justify-center h-14 w-14 rounded-full bg-blue-100"
+        >
+          <svg
+            class="h-8 w-8 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4.5c-4.142 0-7.5 2.239-7.5 5v5c0 2.761 3.358 5 7.5 5s7.5-2.239 7.5-5v-5c0-2.761-3.358-5-7.5-5z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 15.5v-4"
+            />
+          </svg>
+        </span>
+        <div class="font-bold text-lg text-gray-900 mb-1">Security Patrol</div>
+        <div class="text-gray-600 text-sm">
+          24/7 barangay tanod patrol for community safety
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-2xl shadow flex flex-col items-center p-8 text-center"
+      >
+        <span
+          class="mb-4 flex items-center justify-center h-14 w-14 rounded-full bg-blue-100"
+        >
+          <svg
+            class="h-8 w-8 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 21c4.97 0 9-4.03 9-9s-4.03-9-9-9-9 4.03-9 9 4.03 9 9 9z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 7.5c-1.657 0-3 1.343-3 3 0 1.657 1.343 3 3 3s3-1.343 3-3c0-1.657-1.343-3-3-3z"
+            />
+          </svg>
+        </span>
+        <div class="font-bold text-lg text-gray-900 mb-1">Health Services</div>
+        <div class="text-gray-600 text-sm">
+          Basic health services and medical assistance programs
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-2xl shadow flex flex-col items-center p-8 text-center"
+      >
+        <span
+          class="mb-4 flex items-center justify-center h-14 w-14 rounded-full bg-blue-100"
+        >
+          <svg
+            class="h-8 w-8 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <rect x="4" y="7" width="16" height="13" rx="2" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8 7V5a4 4 0 018 0v2"
+            />
+          </svg>
+        </span>
+        <div class="font-bold text-lg text-gray-900 mb-1">Business Permits</div>
+        <div class="text-gray-600 text-sm">
+          Processing and issuance of local business permits
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-2xl shadow flex flex-col items-center p-8 text-center"
+      >
+        <span
+          class="mb-4 flex items-center justify-center h-14 w-14 rounded-full bg-blue-100"
+        >
+          <svg
+            class="h-8 w-8 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+        </span>
+        <div class="font-bold text-lg text-gray-900 mb-1">
+          Community Programs
+        </div>
+        <div class="text-gray-600 text-sm">
+          Youth development, senior citizen, and livelihood programs
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-2xl shadow flex flex-col items-center p-8 text-center"
+      >
+        <span
+          class="mb-4 flex items-center justify-center h-14 w-14 rounded-full bg-blue-100"
+        >
+          <svg
+            class="h-8 w-8 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M17.657 6.343a8 8 0 11-11.314 0"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 8v4l3 3"
+            />
+          </svg>
+        </span>
+        <div class="font-bold text-lg text-gray-900 mb-1">Waste Management</div>
+        <div class="text-gray-600 text-sm">
+          Garbage collection schedules and recycling initiatives
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-2xl shadow flex flex-col items-center p-8 text-center"
+      >
+        <span
+          class="mb-4 flex items-center justify-center h-14 w-14 rounded-full bg-blue-100"
+        >
+          <svg
+            class="h-8 w-8 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4v16m8-8H4"
+            />
+            <circle cx="12" cy="12" r="9" />
+          </svg>
+        </span>
+        <div class="font-bold text-lg text-gray-900 mb-1">
+          Public Information
+        </div>
+        <div class="text-gray-600 text-sm">
+          Announcements, bulletins, and community updates
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="h-full w-full bg-white flex flex-col lg:flex-row items-center justify-center gap-8 px-4 py-16"
+    id="about"
+  >
+    <div class="flex-1 flex flex-col gap-8 max-w-lg w-full">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div
+          class="bg-gray-50 rounded-xl flex flex-col items-center justify-center py-6"
+        >
+          <div class="text-3xl font-bold text-blue-700">12,487</div>
+          <div class="text-gray-500 text-sm">Population</div>
+        </div>
+        <div
+          class="bg-gray-50 rounded-xl flex flex-col items-center justify-center py-6"
+        >
+          <div class="text-3xl font-bold text-blue-700">3.2 km²</div>
+          <div class="text-gray-500 text-sm">Land Area</div>
+        </div>
+        <div
+          class="bg-gray-50 rounded-xl flex flex-col items-center justify-center py-6"
+        >
+          <div class="text-3xl font-bold text-blue-700">3,245</div>
+          <div class="text-gray-500 text-sm">Households</div>
+        </div>
+        <div
+          class="bg-gray-50 rounded-xl flex flex-col items-center justify-center py-6"
+        >
+          <div class="text-3xl font-bold text-blue-700">24</div>
+          <div class="text-gray-500 text-sm">Puroks</div>
+        </div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-6 w-full">
+        <div class="font-semibold text-lg text-gray-900 mb-4">
+          Office Hours & Contact
+        </div>
+        <div class="flex flex-col gap-4">
+          <div class="flex gap-3 items-start">
+            <span
+              class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-600"
+            >
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 8v4l3 3"
+                />
+              </svg>
+            </span>
+            <div>
+              <div class="font-semibold text-gray-800">Office Hours</div>
+              <div class="text-gray-600 text-sm">
+                Monday to Friday: 8:00 AM - 5:00 PM
+              </div>
+              <div class="text-gray-600 text-sm">
+                Saturday: 8:00 AM - 12:00 PM
+              </div>
+              <div class="text-gray-600 text-sm">Sunday: Closed</div>
+            </div>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-600"
+            >
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2 8.5A6.5 6.5 0 0112 2a6.5 6.5 0 0110 6.5c0 7-10 13-10 13S2 15.5 2 8.5z"
+                />
+              </svg>
+            </span>
+            <div>
+              <div class="font-semibold text-gray-800">Contact Numbers</div>
+              <div class="text-gray-600 text-sm">Office: (02) 8123-4567</div>
+              <div class="text-gray-600 text-sm">Mobile: 0917-123-4567</div>
+              <div class="text-gray-600 text-sm">
+                Email: mabuhay&#64;barangay.gov.ph
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-600"
+            >
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M17 8V6a5 5 0 00-10 0v2a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2z"
+                />
+              </svg>
+            </span>
+            <div>
+              <div class="font-semibold text-gray-800">Emergency Hotlines</div>
+              <div class="text-gray-600 text-sm">
+                Barangay Patrol: 0917-888-9999
+              </div>
+              <div class="text-gray-600 text-sm">
+                Fire Station: 0917-777-8888
+              </div>
+              <div class="text-gray-600 text-sm">
+                Health Center: 0917-666-7777
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex-1 flex items-center justify-center w-full max-w-xl h-[500px]"
+    >
+      <div
+        class="w-full h-full bg-gray-200 rounded-2xl flex items-center justify-center text-gray-400 text-lg"
+      >
+        Map Placeholder
+      </div>
+    </div>
+  </div>
+</app-landing-layout>
