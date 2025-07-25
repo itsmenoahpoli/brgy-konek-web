@@ -1,3 +1,122 @@
-<app-dashboard-layout title="Announcements">
-  <div>Resident Announcements Page</div>
+<app-dashboard-layout
+  title="Announcements"
+  subtitle="View all announcements from the barangay"
+>
+  <div
+    class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4"
+  >
+    <div class="flex gap-2 items-center w-full md:w-auto">
+      <input
+        type="text"
+        placeholder="Search announcements..."
+        class="border rounded px-3 py-2 w-full md:w-64 search-input"
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange($event)"
+      />
+      <select
+        class="border rounded px-3 py-2"
+        [(ngModel)]="statusFilter"
+        (ngModelChange)="onStatusFilterChange($event)"
+      >
+        <option value="">All Status</option>
+        <option value="published">Published</option>
+        <option value="draft">Draft</option>
+      </select>
+    </div>
+  </div>
+
+  <div
+    *ngIf="filteredAnnouncements.length === 0"
+    class="flex flex-col items-center justify-center h-96"
+  >
+    <svg
+      class="w-16 h-16 text-gray-400 mb-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M13 16h-1v-4h-1m1-4h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8 9 3.582 9 8z"
+      />
+    </svg>
+    <div class="text-gray-500 text-lg">No announcements found</div>
+  </div>
+
+  <div
+    *ngIf="filteredAnnouncements.length > 0"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+  >
+    <div
+      *ngFor="let announcement of filteredAnnouncements"
+      class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-200 announcement-card"
+    >
+      <div class="relative">
+        <img
+          [src]="announcement.banner_image"
+          alt="Announcement Banner"
+          class="h-48 w-full object-cover"
+          *ngIf="announcement.banner_image"
+        />
+        <div
+          *ngIf="!announcement.banner_image"
+          class="h-48 w-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center"
+        >
+          <svg
+            class="w-16 h-16 text-blue-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+            />
+          </svg>
+        </div>
+        <div
+          class="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium status-badge"
+          [class]="announcement.status === 'published' ? 'published' : 'draft'"
+        >
+          {{ announcement.status | titlecase }}
+        </div>
+      </div>
+
+      <div class="p-4 flex-1 flex flex-col">
+        <h3 class="font-bold text-lg mb-2 text-gray-900 line-clamp-2">
+          {{ announcement.title }}
+        </h3>
+        <h4 class="font-semibold text-sm mb-3 text-gray-700 line-clamp-1">
+          {{ announcement.header }}
+        </h4>
+        <p class="text-gray-600 text-sm mb-4 flex-1 line-clamp-3">
+          {{ announcement.body }}
+        </p>
+
+        <div
+          class="flex justify-between items-center pt-3 border-t border-gray-100"
+        >
+          <div class="text-xs text-gray-500">
+            {{ announcement.created_at | date : "MMM dd, yyyy" }}
+          </div>
+          <button
+            (click)="openAnnouncementDetails(announcement)"
+            class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200"
+          >
+            Read More →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-announcement-details-modal
+    [isVisible]="showModal"
+    [announcement]="selectedAnnouncement"
+    (modalClosed)="onModalClosed()"
+  ></app-announcement-details-modal>
 </app-dashboard-layout>
