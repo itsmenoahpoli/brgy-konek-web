@@ -72,6 +72,41 @@
         </div>
       </div>
 
+      <div>
+        <label
+          for="birthdate"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Birthdate</label
+        >
+        <input
+          id="birthdate"
+          type="date"
+          formControlName="birthdate"
+          class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          [class.border-red-500]="
+            registerForm.get('birthdate')?.invalid &&
+            registerForm.get('birthdate')?.touched
+          "
+        />
+        <div
+          *ngIf="
+            registerForm.get('birthdate')?.invalid &&
+            registerForm.get('birthdate')?.touched
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          <div *ngIf="registerForm.get('birthdate')?.errors?.['required']">
+            Birthdate is required
+          </div>
+          <div *ngIf="registerForm.get('birthdate')?.errors?.['underage']">
+            You must be at least 18 years old to register
+          </div>
+          <div *ngIf="registerForm.get('birthdate')?.errors?.['futureDate']">
+            Birthdate cannot be in the future
+          </div>
+        </div>
+      </div>
+
       <div class="md:col-span-2">
         <label for="email" class="block text-sm font-medium text-gray-700 mb-1"
           >Email Address</label
@@ -292,17 +327,25 @@
           class="block text-sm font-medium text-gray-700 mb-1"
           >Mobile Number</label
         >
-        <input
-          id="mobile_number"
-          type="tel"
-          formControlName="mobile_number"
-          class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          [class.border-red-500]="
-            registerForm.get('mobile_number')?.invalid &&
-            registerForm.get('mobile_number')?.touched
-          "
-          placeholder="+63 912 345 6789"
-        />
+        <div class="relative">
+          <div
+            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+          >
+            <span class="text-gray-500 sm:text-sm">+639</span>
+          </div>
+          <input
+            id="mobile_number"
+            type="tel"
+            formControlName="mobile_number"
+            class="block w-full border border-gray-300 rounded-md pl-12 pr-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            [class.border-red-500]="
+              registerForm.get('mobile_number')?.invalid &&
+              registerForm.get('mobile_number')?.touched
+            "
+            placeholder="123 456 789"
+            maxlength="9"
+          />
+        </div>
         <div
           *ngIf="
             registerForm.get('mobile_number')?.invalid &&
@@ -316,7 +359,7 @@
           <div
             *ngIf="registerForm.get('mobile_number')?.errors?.['philippineMobile']"
           >
-            Please enter a valid Philippine mobile number (e.g., +639123456789)
+            Please enter a valid Philippine mobile number (9 digits)
           </div>
         </div>
       </div>
@@ -477,16 +520,6 @@
           Sign in here
         </button>
       </p>
-    </div>
-
-    <div class="text-center mt-4">
-      <button
-        type="button"
-        (click)="testModal()"
-        class="text-sm text-gray-500 hover:text-gray-700"
-      >
-        Test Modal
-      </button>
     </div>
   </form>
 

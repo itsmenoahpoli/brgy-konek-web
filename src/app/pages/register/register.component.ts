@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -8,6 +8,7 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthLayoutComponent } from '../../components/shared/auth-layout/auth-layout.component';
@@ -19,13 +20,14 @@ import { StatusModalComponent } from '../../components/shared/status-modal/statu
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     AuthLayoutComponent,
     StatusModalComponent,
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit, OnDestroy {
   registerForm: FormGroup;
   isLoading = false;
   errorMessage = '';
@@ -34,6 +36,7 @@ export class RegisterComponent {
   showSuccessDialog = false;
   showPassword = false;
   showConfirmPassword = false;
+  private mobileNumberSubscription: any;
 
   get passwordValidationStatus() {
     const password = this.registerForm.get('password')?.value || '';
@@ -54,6 +57,33 @@ export class RegisterComponent {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
+  ngOnInit(): void {
+    this.mobileNumberSubscription = this.registerForm
+      .get('mobile_number')
+      ?.valueChanges.subscribe((value) => {
+        if (value) {
+          let digits = value.replace(/\D/g, '');
+
+          if (digits.length > 9) {
+            digits = digits.substring(0, 9);
+          }
+
+          if (digits !== value) {
+            this.registerForm.patchValue(
+              { mobile_number: digits },
+              { emitEvent: false }
+            );
+          }
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.mobileNumberSubscription) {
+      this.mobileNumberSubscription.unsubscribe();
+    }
+  }
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -64,6 +94,7 @@ export class RegisterComponent {
         first_name: ['', [Validators.required, Validators.minLength(2)]],
         middle_name: [''],
         last_name: ['', [Validators.required, Validators.minLength(2)]],
+        birthdate: ['', [Validators.required, this.ageValidator]],
         email: [
           '',
           [Validators.required, Validators.email, this.gmailOnlyValidator],
@@ -121,7 +152,7 @@ export class RegisterComponent {
       return null;
     }
 
-    const mobileRegex = /^(\+63)[0-9]{10}$/;
+    const mobileRegex = /^[0-9]{9}$/;
     if (!mobileRegex.test(control.value)) {
       return { philippineMobile: true };
     }
@@ -191,6 +222,34 @@ export class RegisterComponent {
     return null;
   }
 
+  ageValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null;
+    }
+
+    const birthdate = new Date(control.value);
+    const today = new Date();
+    let age = today.getFullYear() - birthdate.getFullYear();
+    const monthDiff = today.getMonth() - birthdate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthdate.getDate())
+    ) {
+      age--;
+    }
+
+    if (age < 18) {
+      return { underage: true };
+    }
+
+    if (birthdate > today) {
+      return { futureDate: true };
+    }
+
+    return null;
+  }
+
   onSubmit(): void {
     console.log('Form submitted, valid:', this.registerForm.valid);
     console.log('Form errors:', this.registerForm.errors);
@@ -208,9 +267,10 @@ export class RegisterComponent {
         `${formValue.first_name} ${formValue.middle_name} ${formValue.last_name}`
       );
       formData.append('last_name', formValue.last_name);
+      formData.append('birthdate', formValue.birthdate);
       formData.append('email', formValue.email);
       formData.append('password', formValue.password);
-      formData.append('mobile_number', formValue.mobile_number);
+      formData.append('mobile_number', '+639' + formValue.mobile_number);
 
       if (formValue.barangay_clearance) {
         formData.append('barangay_clearance', formValue.barangay_clearance);
