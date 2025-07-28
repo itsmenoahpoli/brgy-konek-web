@@ -11,6 +11,12 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import {
+  PhilippineAddressesService,
+  Province,
+  City,
+  Barangay,
+} from '../../services/philippine-addresses.service';
 import { AuthLayoutComponent } from '../../components/shared/auth-layout/auth-layout.component';
 import { StatusModalComponent } from '../../components/shared/status-modal/status-modal.component';
 
@@ -37,6 +43,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
   showPassword = false;
   showConfirmPassword = false;
   private mobileNumberSubscription: any;
+
+  provinces: Province[] = [];
+  cities: City[] = [];
+  barangays: Barangay[] = [];
+  selectedProvince: Province | null = null;
+  selectedCity: City | null = null;
 
   get passwordValidationStatus() {
     const password = this.registerForm.get('password')?.value || '';
@@ -76,6 +88,25 @@ export class RegisterComponent implements OnInit, OnDestroy {
           }
         }
       });
+
+    this.registerForm
+      .get('selected_province_code')
+      ?.valueChanges.subscribe((value) => {
+        console.log('Province value changed:', value);
+        this.onProvinceChange(value);
+      });
+
+    this.registerForm
+      .get('selected_city_code')
+      ?.valueChanges.subscribe((value) => {
+        console.log('City value changed:', value);
+        this.onCityChange(value);
+      });
+
+    this.loadProvinces();
+
+    console.log('Component initialized, provinces:', this.provinces.length);
+    console.log('Form controls:', Object.keys(this.registerForm.controls));
   }
 
   ngOnDestroy(): void {
@@ -84,10 +115,96 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
   }
 
+  loadProvinces(): void {
+    console.log('Loading provinces in component...');
+    this.philippineAddressesService.getProvinces().subscribe({
+      next: (provinces) => {
+        console.log('Provinces loaded:', provinces.length);
+        this.provinces = provinces.sort((a, b) =>
+          a.province_name.localeCompare(b.province_name)
+        );
+        console.log('Provinces sorted:', this.provinces.length);
+        console.log('First few provinces:', this.provinces.slice(0, 3));
+      },
+      error: (error) => {
+        console.error('Error loading provinces:', error);
+      },
+    });
+  }
+
+  onProvinceChange(provinceCode: string): void {
+    console.log('Province changed to:', provinceCode);
+    this.selectedProvince =
+      this.provinces.find((p) => p.province_code === provinceCode) || null;
+    this.cities = [];
+    this.barangays = [];
+    this.selectedCity = null;
+
+    if (provinceCode) {
+      console.log('Loading cities for province:', provinceCode);
+      this.philippineAddressesService
+        .getCitiesByProvince(provinceCode)
+        .subscribe({
+          next: (cities) => {
+            console.log('Cities loaded:', cities.length);
+            this.cities = cities.sort((a, b) =>
+              a.city_name.localeCompare(b.city_name)
+            );
+            console.log('Cities sorted:', this.cities.length);
+
+            this.registerForm.patchValue({
+              selected_city_code: '',
+              address_barangay: '',
+            });
+          },
+          error: (error) => {
+            console.error('Error loading cities:', error);
+          },
+        });
+    } else {
+      this.registerForm.patchValue({
+        selected_city_code: '',
+        address_barangay: '',
+      });
+    }
+  }
+
+  onCityChange(cityCode: string): void {
+    console.log('City changed to:', cityCode);
+    this.selectedCity =
+      this.cities.find((c) => c.city_code === cityCode) || null;
+    this.barangays = [];
+
+    if (cityCode) {
+      console.log('Loading barangays for city:', cityCode);
+      this.philippineAddressesService.getBarangaysByCity(cityCode).subscribe({
+        next: (barangays) => {
+          console.log('Barangays loaded:', barangays.length);
+          this.barangays = barangays.sort((a, b) =>
+            a.brgy_name.localeCompare(b.brgy_name)
+          );
+          console.log('Barangays sorted:', this.barangays.length);
+
+          this.registerForm.patchValue({
+            address_barangay: '',
+          });
+        },
+        error: (error) => {
+          console.error('Error loading barangays:', error);
+        },
+      });
+    } else {
+      this.registerForm.patchValue({
+        address_barangay: '',
+      });
+    }
+  }
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private philippineAddressesService: PhilippineAddressesService
   ) {
     this.registerForm = this.fb.group(
       {
@@ -105,6 +222,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
           '',
           [Validators.required, this.philippineMobileValidator],
         ],
+        address_sitio: ['', [Validators.required]],
+        address_barangay: ['', [Validators.required]],
+        selected_province_code: ['', [Validators.required]],
+        selected_city_code: ['', [Validators.required]],
         barangay_clearance: ['', [this.fileValidator]],
       },
       { validators: this.passwordMatchValidator }
@@ -183,10 +304,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       password.value !== confirmPassword.value
     ) {
       confirmPassword.setErrors({ passwordMismatch: true });
-      return { passwordMismatch: true };
-    }
-
-    if (confirmPassword && confirmPassword.errors) {
+    } else if (confirmPassword && confirmPassword.errors) {
       delete confirmPassword.errors['passwordMismatch'];
       if (Object.keys(confirmPassword.errors).length === 0) {
         confirmPassword.setErrors(null);
@@ -202,6 +320,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
 
     const file = control.value;
+
+    if (!(file instanceof File)) {
+      return { fileType: true };
+    }
+
     const maxSize = 5 * 1024 * 1024;
     const allowedTypes = [
       'image/jpeg',
@@ -266,11 +389,27 @@ export class RegisterComponent implements OnInit, OnDestroy {
         'name',
         `${formValue.first_name} ${formValue.middle_name} ${formValue.last_name}`
       );
-      formData.append('last_name', formValue.last_name);
-      formData.append('birthdate', formValue.birthdate);
       formData.append('email', formValue.email);
       formData.append('password', formValue.password);
       formData.append('mobile_number', '+639' + formValue.mobile_number);
+      formData.append('user_type', 'resident');
+      formData.append(
+        'address',
+        `${formValue.address_sitio}, ${formValue.address_barangay}, ${
+          this.selectedCity?.city_name || ''
+        }, ${this.selectedProvince?.province_name || ''}`
+      );
+      formData.append('birthdate', formValue.birthdate);
+      formData.append('address_sitio', formValue.address_sitio);
+      formData.append('address_barangay', formValue.address_barangay);
+      formData.append(
+        'address_municipality',
+        this.selectedCity?.city_name || ''
+      );
+      formData.append(
+        'address_province',
+        this.selectedProvince?.province_name || ''
+      );
 
       if (formValue.barangay_clearance) {
         formData.append('barangay_clearance', formValue.barangay_clearance);
@@ -352,6 +491,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       barangay_clearance: file,
     });
     this.registerForm.get('barangay_clearance')?.markAsTouched();
+    this.registerForm.get('barangay_clearance')?.updateValueAndValidity();
   }
 
   testModal(): void {
@@ -365,5 +505,24 @@ export class RegisterComponent implements OnInit, OnDestroy {
       this.showSuccessDialog = false;
       console.log('Modal hidden');
     }, 2000);
+  }
+
+  debugForm(): void {
+    console.log('Form valid:', this.registerForm.valid);
+    console.log('Form errors:', this.registerForm.errors);
+    console.log('Form value:', this.registerForm.value);
+
+    Object.keys(this.registerForm.controls).forEach((key) => {
+      const control = this.registerForm.get(key);
+      if (control) {
+        console.log(`${key}:`, {
+          valid: control.valid,
+          invalid: control.invalid,
+          errors: control.errors,
+          value: control.value,
+          touched: control.touched,
+        });
+      }
+    });
   }
 }

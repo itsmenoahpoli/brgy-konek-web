@@ -364,6 +364,136 @@
         </div>
       </div>
 
+      <div>
+        <label
+          for="address_sitio"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Sitio/Purok</label
+        >
+        <input
+          id="address_sitio"
+          type="text"
+          formControlName="address_sitio"
+          class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          [class.border-red-500]="
+            registerForm.get('address_sitio')?.invalid &&
+            registerForm.get('address_sitio')?.touched
+          "
+        />
+        <div
+          *ngIf="
+            registerForm.get('address_sitio')?.invalid &&
+            registerForm.get('address_sitio')?.touched
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          Sitio/Purok is required
+        </div>
+      </div>
+
+      <div>
+        <label
+          for="address_province"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Province</label
+        >
+        <select
+          id="address_province"
+          formControlName="selected_province_code"
+          (change)="onProvinceChange($any($event.target).value)"
+          class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white"
+          [class.border-red-500]="
+            registerForm.get('selected_province_code')?.invalid &&
+            registerForm.get('selected_province_code')?.touched
+          "
+        >
+          <option value="">Select Province</option>
+          <option
+            *ngFor="let province of provinces"
+            [value]="province.province_code"
+          >
+            {{ province.province_name }}
+          </option>
+        </select>
+        <div
+          *ngIf="
+            registerForm.get('selected_province_code')?.invalid &&
+            registerForm.get('selected_province_code')?.touched
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          Province is required
+        </div>
+      </div>
+
+      <div>
+        <label
+          for="address_municipality"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Municipality/City</label
+        >
+        <select
+          id="address_municipality"
+          formControlName="selected_city_code"
+          (change)="onCityChange($any($event.target).value)"
+          class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white"
+          [class.border-red-500]="
+            registerForm.get('selected_city_code')?.invalid &&
+            registerForm.get('selected_city_code')?.touched
+          "
+          [disabled]="cities.length === 0"
+        >
+          <option value="">Select Municipality/City</option>
+          <option *ngFor="let city of cities" [value]="city.city_code">
+            {{ city.city_name }}
+          </option>
+        </select>
+        <div
+          *ngIf="
+            registerForm.get('selected_city_code')?.invalid &&
+            registerForm.get('selected_city_code')?.touched
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          Municipality/City is required
+        </div>
+      </div>
+
+      <div>
+        <label
+          for="address_barangay"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Barangay</label
+        >
+        <select
+          id="address_barangay"
+          formControlName="address_barangay"
+          class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white"
+          [class.border-red-500]="
+            registerForm.get('address_barangay')?.invalid &&
+            registerForm.get('address_barangay')?.touched
+          "
+          [disabled]="barangays.length === 0"
+        >
+          <option value="">Select Barangay</option>
+          <option
+            *ngFor="let barangay of barangays"
+            [value]="barangay.brgy_name"
+          >
+            {{ barangay.brgy_name }}
+          </option>
+        </select>
+        <div
+          *ngIf="
+            registerForm.get('address_barangay')?.invalid &&
+            registerForm.get('address_barangay')?.touched
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          Barangay is required
+        </div>
+      </div>
+
       <div class="md:col-span-2">
         <label
           for="barangay_clearance"
@@ -386,7 +516,6 @@
             #fileInput
             id="barangay_clearance"
             type="file"
-            formControlName="barangay_clearance"
             accept="image/*,.pdf"
             class="hidden"
             (change)="onFileSelected($event)"
@@ -472,6 +601,22 @@
       class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
     >
       {{ errorMessage }}
+    </div>
+
+    <div
+      class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded relative mb-4"
+    >
+      <p><strong>Debug Info:</strong></p>
+      <p>Form Valid: {{ registerForm.valid }}</p>
+      <p>Form Invalid: {{ registerForm.invalid }}</p>
+      <p>Form Errors: {{ registerForm.errors | json }}</p>
+      <button
+        type="button"
+        (click)="debugForm()"
+        class="mt-2 px-3 py-1 bg-blue-600 text-white rounded text-sm"
+      >
+        Debug Form
+      </button>
     </div>
 
     <div>
